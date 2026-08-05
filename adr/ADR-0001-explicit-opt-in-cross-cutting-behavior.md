@@ -124,6 +124,11 @@ FlossWare common libraries SHOULD provide optional support for:
 
 These capabilities SHOULD be available but never activated without explicit configuration or annotation.
 
+## Related ADRs
+
+- [ADR-0005](ADR-0005-event-driven-internal-bus.md) — Event-Driven Internal Bus
+- [ADR-0006](ADR-0006-cross-cutting-decorators.md) — Cross-Cutting Decorators (preferred *mechanism* when a behavior is opted in)
+
 ## Result
 
 FlossWare services remain modular by default while still supporting sophisticated orchestration, automation, and AI-driven workflows when intentionally enabled.

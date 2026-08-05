@@ -28,6 +28,8 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0007](adr/ADR-0007-unified-service-ui-contract.md) | Unified Service UI Contract |
 | [ADR-0008](adr/ADR-0008-free-first-modular-platform.md) | Free-First Modular Platform |
 | [ADR-0009](adr/ADR-0009-core-architecture-principles.md) | Core Architecture Principles |
+| [ADR-0010](adr/ADR-0010-rest-service-boundaries.md) | REST Service Boundaries and Integration |
+| [ADR-0011](adr/ADR-0011-stored-procedure-database-access.md) | Stored Procedure Database Access Policy |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 

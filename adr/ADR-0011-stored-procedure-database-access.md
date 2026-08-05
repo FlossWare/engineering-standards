@@ -10,15 +10,33 @@ Accepted
 
 Stored procedures can encapsulate set-based logic, transactions, and schema details. Overuse turns the database into an application server and hides orchestration that belongs in services or workflows.
 
+## Scope
+
+Data-access patterns for FlossWare services that use relational (or similar) databases.
+
+## Non-goals
+
+- Does not ban stored procedures.
+- Does not prescribe a specific RDBMS or procedure language.
+
 ## Decision
 
-Stored procedures SHOULD be used where they provide clear value:
+### Stored procedures MAY contain
 
-- Database abstraction / stable data API for services
-- Transaction boundaries that are naturally data-centric
-- Complex set-based operations
-- Performance-critical data operations
-- Encapsulation of schema changes behind a stable procedure contract
+- Data integrity rules enforced close to the data
+- Transactional data operations that are naturally data-centric
+- Database-centric logic (set-based transforms, bulk updates, schema encapsulation)
+- Stable data APIs that hide physical schema from callers
+- Performance-critical operations that benefit from engine-side execution
+
+### Stored procedures SHOULD NOT become
+
+- The **sole** location for application orchestration
+- Owners of **business workflows that span multiple systems** (external APIs, message buses, AI pipelines)
+- Replacements for service-layer capability exposure ([ADR-0010](ADR-0010-rest-service-boundaries.md))
+- Message routing / event-bus control planes ([ADR-0005](ADR-0005-event-driven-internal-bus.md))
+
+### Hard boundaries
 
 Stored procedures SHALL NOT replace:
 
@@ -27,13 +45,16 @@ Stored procedures SHALL NOT replace:
 - External integrations
 - Message routing / event bus responsibilities
 
-Services remain the authority for business capability exposure ([ADR-0010](ADR-0010-rest-service-boundaries.md)). Clients still MUST NOT call the database directly.
+Services remain the authority for business capability exposure. Clients still MUST NOT call the database directly.
+
+Goal: preserve benefits of database APIs without recreating tightly coupled database-centric architectures.
 
 ## Consequences
 
 ### Positive
 - Performance and transactional integrity where the DB is the right tool.
 - Schema evolution can be hidden behind procedure contracts.
+- Clear MAY / SHOULD NOT split reduces “app in the database” drift.
 
 ### Negative
 - Logic split across service and DB requires discipline and testing strategy.

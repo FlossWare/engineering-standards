@@ -12,6 +12,12 @@ YYYY-MM-DD
 ## Context
 What is the issue that we're seeing that is motivating this decision or change?
 
+## Scope
+What this decision covers (systems, layers, audiences, time horizon).
+
+## Non-goals
+What this decision deliberately does **not** cover or require. Prevents readers from inferring broader mandates than were decided.
+
 ## Decision
 What is the change that we're proposing and/or doing?
 

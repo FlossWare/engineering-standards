@@ -12,12 +12,41 @@ FlossWare principle #1 states that configuration is the source of truth ([ADR-00
 
 This ADR makes the principle normative and testable.
 
+## Scope
+
+Applies to FlossWare services, libraries, and deployment artifacts that control runtime behavior via configuration.
+
+## Non-goals
+
+- Does not require a single global config format or server.
+- Does not move business algorithms or multi-step workflows into configuration files.
+
 ## Decision
 
 ### Authoritative configuration
 
 - **Declarative, reviewable configuration** SHALL be the authoritative source for system behavior (files, config services, or equivalent artifacts that can be diffed in version control or audited).
 - **Runtime behavior SHOULD be explainable from configuration** — an operator ought to determine why a capability is on or off by inspecting config and explicit opt-in markers ([ADR-0001](ADR-0001-explicit-opt-in-cross-cutting-behavior.md)), not by reverse-engineering code paths alone.
+
+### What configuration SHOULD describe
+
+Configuration SHOULD express:
+
+- **Intent** — desired capabilities and modes for an environment
+- **Policy** — allow/deny, free-first filters, quality-gate rules
+- **Topology** — endpoints, pools, service bindings
+- **Enablement** — explicit feature on/off and opt-in markers
+- **Operational limits** — budgets, rate limits, timeouts, quotas
+
+### What configuration SHOULD NOT become
+
+Configuration SHOULD NOT replace a programming language. Avoid embedding:
+
+- **Business workflows** that span multiple systems or long-running processes
+- **Algorithms** (routing math, scoring formulas beyond simple thresholds)
+- **Procedural logic** (branching scripts, loops, ad-hoc code in config)
+
+Complex behavior belongs in versioned application code or services, parameterized by declarative config.
 
 ### Defaults and activation
 
@@ -45,11 +74,13 @@ Dynamic model registries ([ADR-0015](ADR-0015-dynamic-service-discovery-ai-model
 - Auditable, reviewable behavior changes via config PRs.
 - Easier debugging and multi-environment promotion.
 - Aligns with opt-in defaults and free-first modular design.
+- Clear boundary reduces “programming in YAML/JSON” failure modes.
 
 ### Negative
 
 - More discipline required for config schema and documentation.
 - Temptation to bypass config for "just this once" hotfixes must be resisted.
+- Teams must resist stuffing workflows into config for short-term convenience.
 
 ## Alternatives Considered
 
@@ -59,8 +90,11 @@ Rejected as sole authority — harder for operators to tune without releases; co
 ### Generated files as authority
 Rejected — not reviewable as intent; drifts from source.
 
-### Declarative config as authority (chosen)
-Matches FlossWare principles and supports explainable runtime behavior.
+### Configuration as general-purpose application logic
+Rejected — unmaintainable, hard to test, and obscures real code ownership.
+
+### Declarative config as authority within clear boundaries (chosen)
+Matches FlossWare principles and supports explainable runtime behavior without config-as-code sprawl.
 
 ## Related ADRs
 

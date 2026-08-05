@@ -10,13 +10,24 @@ Accepted
 
 AI-assisted code review, design evaluation, and decision-making can use a single model or multiple models. Single-model review is fast and cheap but blind to that model's systematic biases. Multi-model consensus introduces diverse perspectives at the cost of latency and API calls.
 
-Empirical testing across 12 rounds of experiments with 500+ models revealed:
+Internal FlossWare evaluations (multi-round model fleets used in development and review workflows) observed patterns consistent with:
 
-- Multi-model review caught 3 real bugs in a production router that single-model review and unit tests missed (race condition on shared state, instruction ordering error, insufficient validation).
-- For simple factual tasks (math, lookup, logic), consensus did NOT outperform the single best model (consensus accuracy 87.5% vs individual 90%).
-- Approximately 30% of model-reported "failures" in code review were hallucinations caused by truncated context, not real defects.
+- Multi-model review surfacing defects that single-model review and unit tests missed (e.g. shared-state races, ordering errors, weak validation).
+- Consensus not reliably outperforming the single best model on simple factual tasks (math, lookup, logic).
+- A substantial share of model-reported “failures” in code review being non-reproducible (often tied to truncated or incomplete context) rather than confirmed defects.
+
+These are **internal operational observations**, not externally published reproducible research. Decisions below stand on architectural risk management; numbers from any specific experiment run SHOULD NOT be treated as universal constants.
 
 The value of consensus is highest when the task is subjective, multi-dimensional, or when correctness is hard to verify mechanically.
+
+## Scope
+
+Quality gates for design review, high-impact code review, and architecture decisions in FlossWare AI-assisted workflows.
+
+## Non-goals
+
+- Does not mandate consensus for every prompt or low-stakes query.
+- Does not specify a particular vendor product or voting product SKU.
 
 ## Decision
 
@@ -34,9 +45,26 @@ Single-model evaluation SHOULD be preferred for:
 
 ### Consensus panel composition
 
-- Panels SHOULD include models from at least 3 distinct providers to maximize perspective diversity.
-- Panels SHOULD use a minimum of 3 voters; 5-7 SHOULD be used for quality gates.
-- The same model SHALL NOT serve as both generator and sole evaluator of an output (see anti-self-referential safeguards).
+- Panels SHOULD include models from at least **3 distinct diversity units** (see *Provider diversity* below).
+- Panels SHOULD use a minimum of 3 voters; 5–7 SHOULD be used for quality gates.
+- The same model SHALL NOT serve as both generator and sole evaluator of an output (anti-self-referential safeguard).
+
+### Provider diversity (measurable definition)
+
+**Diversity unit** means an independent **model family / training organization lineage**, not merely a different URL or reseller.
+
+| Counts toward diversity? | Example |
+|--------------------------|---------|
+| **Yes** | Distinct model families from different training organizations (e.g. different labs’ flagship lines) |
+| **Weak / partial** | Different model families from the **same** organization (better than one family, still correlated) |
+| **No** | Same model (or fine-tune of the same base) exposed via direct API vs cloud proxy vs second marketplace |
+| **No** | Same weights behind two endpoint hostnames or regions |
+
+Rules:
+
+- “3 distinct providers” in operational configs SHALL mean **3 diversity units** as defined above.
+- Hosting platform alone (AWS vs Azure vs direct) SHALL NOT satisfy diversity if the underlying model family is the same.
+- When only correlated models are available, panels SHOULD document reduced diversity and prefer human review for contested findings.
 
 ### Handling disagreement
 
@@ -47,32 +75,36 @@ Single-model evaluation SHOULD be preferred for:
 ### False positive mitigation
 
 - Review prompts SHALL include sufficient context for the model to evaluate (full imports, type signatures, surrounding code).
-- Findings SHOULD be adversarially verified: a different model from a different provider attempts to reproduce or refute each finding before it is reported.
+- Findings SHOULD be adversarially verified: a different model from a different **diversity unit** attempts to reproduce or refute each finding before it is reported.
 - Findings that cannot be reproduced by at least one independent verifier SHOULD be discarded.
 
 ## Consequences
 
 ### Positive
 - Catches real defects that single-model review misses.
-- Reduces systematic bias from any single model vendor.
-- Review-before-build (design phase) saves 6:1 rework vs review-after-build.
+- Reduces systematic bias from any single model lineage.
+- Review-before-build reduces costly rework vs review-only-after-build.
 - Adversarial verification filters hallucinated findings.
+- Diversity definition is testable in panel configuration.
 
 ### Negative
 - Higher latency and API cost per review cycle.
-- Consensus can converge on a wrong answer when models share training data biases.
+- Consensus can still converge on a wrong answer when models share training data biases.
 - Requires infrastructure to fan out prompts and collect votes.
 - Rate limits across providers can cause partial panel failures; retry logic is necessary.
 
 ## Alternatives Considered
 
 ### Single-model review only
-Rejected — misses real bugs due to systematic blind spots; empirically demonstrated.
+Rejected — misses defects due to systematic blind spots observed in internal evaluations.
 
 ### All decisions by consensus (no single-model path)
-Rejected — overkill for simple factual tasks where one good model suffices; wastes API budget.
+Rejected — overkill for simple factual tasks; wastes API budget.
 
-### Multi-model consensus with task-appropriate scope (chosen)
+### Diversity = distinct API endpoints only
+Rejected — allows false confidence when the same model is reached through multiple hosts.
+
+### Multi-model consensus with task-appropriate scope and lineage-based diversity (chosen)
 Balances thoroughness for high-stakes decisions with efficiency for routine operations.
 
 ## Related ADRs

@@ -17,11 +17,7 @@ With hundreds of AI models available across free and paid providers, static mode
 
 A routing strategy is needed that balances **exploitation** (use the best known model) with **exploration** (try lesser-known models to discover if they are better), while adapting to real-time performance signals.
 
-Empirical testing across 12 experimental rounds with 400+ models showed:
-
-- Thompson Sampling (Beta distribution) outperformed epsilon-greedy and UCB variants for model selection.
-- Optimal hyperparameters converged to epsilon=0.10, observation cap=50 for verified model pools.
-- Provider diversity in the routing pool materially affected result quality; single-provider pools hit systematic failure modes.
+Internal FlossWare evaluations of multi-model routing observed that Thompson Sampling (Beta priors) performed well relative to simpler heuristics (e.g. epsilon-greedy), that modest exploration and observation caps helped adapt to drift, and that single-lineage pools were more prone to correlated failure modes. These are **internal operational observations**, not externally published reproducible research; specific hyperparameter values below are starting points, not universal optima.
 
 ## Decision
 
@@ -32,7 +28,7 @@ Model selection for AI workloads SHOULD use a multi-armed bandit strategy, speci
 - Each model maintains a Beta(alpha, beta) distribution representing observed success/failure.
 - On each request, sample from each model's distribution; select the highest sample.
 - An epsilon parameter (a value of 0.10 SHOULD be used as a starting point) forces random exploration to prevent premature convergence.
-- An observation cap — the maximum combined alpha + beta before rescaling — SHOULD be set to approximately 50. This decays old observations so the bandit adapts to model drift rather than being dominated by historical performance.
+- An observation cap — the maximum combined alpha + beta before rescaling — SHOULD be set to approximately 50 as a starting point. This decays old observations so the bandit adapts to model drift rather than being dominated by historical performance.
 
 ### Reward signal
 
@@ -79,10 +75,10 @@ Rejected — cannot adapt to model availability changes or discover new top perf
 Rejected — treats all models as equal; wastes calls on known-poor performers.
 
 ### Epsilon-greedy without Thompson Sampling
-Rejected — Thompson Sampling empirically outperformed epsilon-greedy by naturally balancing exploration with confidence-weighted exploitation.
+Rejected as default — internal evaluations favored Thompson Sampling’s confidence-weighted exploration/exploitation balance.
 
 ### Thompson Sampling with Beta priors (chosen)
-Best empirical performance across 12 rounds; naturally handles uncertainty and adapts to changing model quality.
+Practical default for adaptive routing under uncertainty and changing model quality.
 
 ## Related ADRs
 - [ADR-0002](ADR-0002-ai-provider-abstraction.md) — AI Provider Abstraction

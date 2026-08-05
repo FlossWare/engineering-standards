@@ -10,23 +10,20 @@ Accepted
 
 The AI model landscape changes rapidly: providers add and remove models weekly, free tiers appear and disappear, rate limits shift, and model quality varies over time. Static model registries (hardcoded lists of model names, endpoints, and API keys) cannot keep pace with this churn.
 
-A system that hardcodes 80 models today will have stale entries within weeks — dead models that waste retry budget, missing models that could improve results, and incorrect metadata that causes silent failures.
+A system that hardcodes a fixed model list today will have stale entries within weeks — dead models that waste retry budget, missing models that could improve results, and incorrect metadata that causes silent failures.
 
-Empirical evidence from operating a 500+ model registry:
-
-- Hundreds of additional models were dynamically discovered from a registry and made routable without code changes.
-- Health checking identified models that returned successful HTTP responses but produced incorrect answers (alive but inaccurate).
-- Provider bridge tables (mapping provider name to endpoint pattern, authentication key, and call format) enabled automatic integration of any model from a known provider.
+Internal FlossWare operations with large dynamic registries observed that automated discovery can surface many additional routable models without code changes, that health checks can catch “HTTP 200 but wrong answer” models, and that provider bridge tables reduce integration cost for known call formats. These are **internal operational observations**, not externally published studies.
 
 ## Decision
 
-AI model inventories SHALL be maintained as dynamic registries, not hardcoded configuration.
+AI model inventories SHALL be maintained as dynamic registries, not hardcoded configuration alone.
 
-### Registry as source of truth
+### Registry as inventory source
 
-- The model registry SHALL be the authoritative source for available models, their providers, and their capabilities.
+- The model registry SHALL be the authoritative *inventory* source for available models, their providers, and their capabilities.
 - Hardcoded model entries MAY exist as a bootstrap or override layer but SHALL NOT be the sole source of routing information.
-- The registry SHOULD be populated by automated discovery (scrapers, provider API enumeration) rather than manual entry.
+- The registry SHOULD be populated by automated discovery (scrapers, provider API enumeration) rather than manual entry only.
+- **Policy** (allowed pools, free-first filters, budgets) remains configuration-owned ([ADR-0016](ADR-0016-configuration-as-source-of-truth.md)).
 
 ### Provider bridge tables
 
@@ -76,13 +73,13 @@ Models SHALL progress through a defined lifecycle:
 ### Negative
 - Registry infrastructure must be operated and monitored.
 - Automated discovery may import low-quality or irrelevant models that consume health check budget.
-- Health check probes test a narrow capability; a model that passes "2+3?" may still fail at complex tasks.
+- Health check probes test a narrow capability; a model that passes a simple arithmetic probe may still fail at complex tasks.
 - Stale registry cache during extended outages may route to models that have since been decommissioned.
 
 ## Alternatives Considered
 
 ### Hardcoded model list only
-Rejected — cannot adapt to the pace of model ecosystem changes; demonstrated hundreds of missed models in practice.
+Rejected — cannot adapt to the pace of model ecosystem changes.
 
 ### Fully dynamic with no hardcoded fallback
 Rejected — registry outage would leave the system with zero available models.

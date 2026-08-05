@@ -9,15 +9,41 @@ Accepted
 2026-07-31
 
 ## Context
-Projects such as PXEOS and TFTP OS require consistent operator experiences.
+
+Projects such as PXE OS and TFTP OS need consistent operator experiences across TUI, GUI, web, and mobile clients. Embedding project-specific UI logic in services (or embedding service logic in each UI) multiplies maintenance cost and blocks a unified operator console.
+
+`flossware-tftp-os` already demonstrates multiple frontends consuming a shared REST API under `/api/v1/`.
 
 ## Decision
+
 User interfaces SHALL integrate through stable service APIs and contracts rather than embedding project-specific implementations.
 
+- REST (+ OpenAPI) is the default external synchronous contract for operator UIs.
+- Clients SHALL NOT access databases directly.
+- Backend evolution SHOULD preserve backward-compatible API contracts or use explicit versioning.
+
 ## Consequences
+
+### Positive
 - Services remain independently deployable.
 - A unified UI can aggregate capabilities.
-- Backend evolution does not require UI rewrites.
+- Backend evolution does not require full UI rewrites.
+- New frontends can be added against the same contract.
+
+### Negative
+- API design discipline is mandatory.
+- Lowest-common-denominator APIs may need extension points for advanced UIs.
+
+## Alternatives Considered
+
+### UI embedded in each service
+Rejected — fragments operator experience and duplicates UI work.
+
+### Shared UI library calling internal modules directly
+Rejected — breaks independent deployability and language boundaries.
+
+### Stable service API contracts (chosen)
+Matches multi-frontend reality in `flossware-tftp-os` and supports a unified console.
 
 ## Related ADRs
-- See also validation against `flossware-tftp-os` multi-frontend implementation.
+- [ADR-0004](ADR-0004-mcp-tool-contracts.md) — MCP and Tool Contracts (agent path; UI path remains REST/OpenAPI)

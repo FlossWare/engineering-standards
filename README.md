@@ -11,6 +11,8 @@ This repository defines shared engineering standards, architecture decisions, an
 - Avoid unnecessary coupling.
 - Favor automation, repeatability, and infrastructure-as-code.
 
+See [ADR-0009](adr/ADR-0009-core-architecture-principles.md) for the normative statement of these principles.
+
 ## Architecture Decisions
 
 Architecture decisions are documented as ADRs under [`adr/`](adr/).
@@ -25,15 +27,19 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0006](adr/ADR-0006-cross-cutting-decorators.md) | Cross-Cutting Decorators |
 | [ADR-0007](adr/ADR-0007-unified-service-ui-contract.md) | Unified Service UI Contract |
 | [ADR-0008](adr/ADR-0008-free-first-modular-platform.md) | Free-First Modular Platform |
+| [ADR-0009](adr/ADR-0009-core-architecture-principles.md) | Core Architecture Principles |
+
+New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 
 ## ADR Process
 
 All ADRs should include:
 
 - Status
+- Date
 - Context
 - Decision
-- Consequences
+- Consequences (positive and negative)
 - Alternatives considered
 - Related ADRs
 

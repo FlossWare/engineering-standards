@@ -30,6 +30,10 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0009](adr/ADR-0009-core-architecture-principles.md) | Core Architecture Principles |
 | [ADR-0010](adr/ADR-0010-rest-service-boundaries.md) | REST Service Boundaries and Integration |
 | [ADR-0011](adr/ADR-0011-stored-procedure-database-access.md) | Stored Procedure Database Access Policy |
+| [ADR-0012](adr/ADR-0012-multi-model-consensus-quality-gates.md) | Multi-Model Consensus for Quality Gates |
+| [ADR-0013](adr/ADR-0013-bandit-based-model-selection.md) | Bandit-Based Model Selection |
+| [ADR-0014](adr/ADR-0014-token-budget-management.md) | Token Budget Management |
+| [ADR-0015](adr/ADR-0015-dynamic-service-discovery-ai-models.md) | Dynamic Service Discovery for AI Models |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 

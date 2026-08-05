@@ -1,7 +1,7 @@
 # ADR-0014: Token Budget Management
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-08-05

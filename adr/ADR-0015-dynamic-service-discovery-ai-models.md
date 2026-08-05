@@ -1,7 +1,7 @@
 # ADR-0015: Dynamic Service Discovery for AI Models
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-08-05
@@ -96,3 +96,4 @@ Combines automated discovery with reliability guarantees and quality gates.
 - [ADR-0008](ADR-0008-free-first-modular-platform.md) — Free-First Modular Platform
 - [ADR-0012](ADR-0012-multi-model-consensus-quality-gates.md) — Multi-Model Consensus for Quality Gates
 - [ADR-0013](ADR-0013-bandit-based-model-selection.md) — Bandit-Based Model Selection
+- [ADR-0016](ADR-0016-configuration-as-source-of-truth.md) — Configuration as Source of Truth

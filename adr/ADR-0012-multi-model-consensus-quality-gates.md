@@ -1,7 +1,7 @@
 # ADR-0012: Multi-Model Consensus for Quality Gates
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-08-05

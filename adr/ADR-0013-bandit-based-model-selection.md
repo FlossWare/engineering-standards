@@ -1,7 +1,7 @@
 # ADR-0013: Bandit-Based Model Selection
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-08-05

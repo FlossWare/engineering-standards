@@ -11,7 +11,7 @@ This repository defines shared engineering standards, architecture decisions, an
 - Avoid unnecessary coupling.
 - Favor automation, repeatability, and infrastructure-as-code.
 
-See [ADR-0009](adr/ADR-0009-core-architecture-principles.md) for the normative statement of these principles.
+See [ADR-0009](adr/ADR-0009-core-architecture-principles.md) and [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md) for normative statements.
 
 ## Architecture Decisions
 
@@ -34,6 +34,7 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0013](adr/ADR-0013-bandit-based-model-selection.md) | Bandit-Based Model Selection |
 | [ADR-0014](adr/ADR-0014-token-budget-management.md) | Token Budget Management |
 | [ADR-0015](adr/ADR-0015-dynamic-service-discovery-ai-models.md) | Dynamic Service Discovery for AI Models |
+| [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md) | Configuration as Source of Truth |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 

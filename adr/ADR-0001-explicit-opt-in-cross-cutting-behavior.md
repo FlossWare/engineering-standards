@@ -22,11 +22,15 @@ FlossWare consists of modular services that may require cross-cutting capabiliti
 
 A common framework pattern is to enable these behaviors globally by default. While convenient initially, this creates hidden coupling between components and makes system behavior difficult to understand, test, and operate.
 
-FlossWare requires a modular architecture where components can be used independently and where infrastructure behavior is intentionally selected.
+The same problem appears beyond runtime annotations: a dependency on the classpath, a build plugin, or a deployment profile can silently activate behavior. FlossWare requires modular architecture where components can be used independently and infrastructure behavior is intentionally selected at every layer.
 
 ## Decision
 
-FlossWare components will follow an explicit opt-in model.
+FlossWare components SHALL follow an explicit opt-in model.
+
+**Features MUST have explicit activation points and MUST NOT become active solely because a component is present.**
+
+### Default behavior
 
 The default behavior of any component or library is:
 
@@ -36,9 +40,16 @@ The default behavior of any component or library is:
 - no implicit persistence
 - no hidden external side effects
 
-Cross-cutting behaviors MUST be explicitly enabled by the developer.
+### Opt-in applies at all layers
 
-Examples:
+| Layer | Rule |
+|-------|------|
+| **Dependency inclusion** | Adding a library or module to the dependency graph SHALL NOT by itself enable cross-cutting side effects. The dependency MAY provide capability; activation remains separate. |
+| **Build-time activation** | Build plugins, annotation processors, and code generators that inject infrastructure behavior SHALL require explicit project configuration (flags, profiles, or config files). |
+| **Deployment configuration** | Runtime profiles, feature flags, and environment overlays SHALL enable capabilities only when declared. Presence of an optional service in the environment SHALL NOT auto-wire it into every component. |
+| **Runtime behavior** | Call-site annotations, explicit registration, or config-driven middleware SHALL be required before events, audit, metrics, tracing, or similar behaviors fire. |
+
+### Runtime examples
 
 ```java
 @PublishEvent("pxe.install.completed.v1")
@@ -51,6 +62,8 @@ public void completeInstall() {
 public void removeImage() {
 }
 ```
+
+Cross-cutting behaviors MUST be explicitly enabled by the developer (annotation, configuration, or registration).
 
 ## Event Contract Model
 
@@ -83,15 +96,16 @@ Event schemas are maintained independently from implementations and are treated 
 ### Positive
 
 - Components remain lightweight and reusable.
-- Dependencies are explicit.
-- Testing is simpler.
+- Dependencies are explicit at every lifecycle stage.
+- Testing is simpler (no surprise side effects from classpath alone).
 - Services can adopt infrastructure capabilities incrementally.
 - Event-driven architecture can evolve without forcing every service into it.
 
 ### Negative
 
-- Developers must intentionally add required behaviors.
+- Developers must intentionally add required behaviors at the appropriate layer.
 - Teams must maintain event contracts and versions.
+- Build and deploy configs need clear feature-flag documentation.
 
 ## Alternatives Considered
 
@@ -111,6 +125,14 @@ Rejected as the default.
 Reason:
 - Useful in some deployments, but too implicit for the FlossWare core model.
 
+### Opt-in only at runtime (annotations only)
+
+Rejected as insufficient.
+
+Reason:
+- Dependency or build-time magic can still activate behavior without a runtime marker.
+- Full-stack explicit activation is required for predictable modularity.
+
 ## Implementation Guidance
 
 FlossWare common libraries SHOULD provide optional support for:
@@ -124,10 +146,13 @@ FlossWare common libraries SHOULD provide optional support for:
 
 These capabilities SHOULD be available but never activated without explicit configuration or annotation.
 
+Auto-configuration (e.g. classpath scanning that enables features by default) SHALL NOT be the default posture. If a framework offers auto-config, FlossWare integrations SHOULD disable it unless the project explicitly opts in.
+
 ## Related ADRs
 
 - [ADR-0005](ADR-0005-event-driven-internal-bus.md) — Event-Driven Internal Bus
 - [ADR-0006](ADR-0006-cross-cutting-decorators.md) — Cross-Cutting Decorators (preferred *mechanism* when a behavior is opted in)
+- [ADR-0016](ADR-0016-configuration-as-source-of-truth.md) — Configuration as Source of Truth
 
 ## Result
 

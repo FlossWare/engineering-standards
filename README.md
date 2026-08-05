@@ -33,6 +33,11 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 
+## Reference architecture
+
+- [Reference architecture diagram](docs/architecture/reference-architecture.md) (Mermaid)
+- [tftp-os UI contract validation](docs/architecture/reference-implementations/tftp-os-ui-contract.md)
+
 ## ADR Process
 
 All ADRs should include:

@@ -56,7 +56,7 @@ Keeps FlossWare focused on reusable infrastructure and allows external agents to
 ## Related ADRs
 
 - [ADR-0004](ADR-0004-mcp-tool-contracts.md) — MCP and Tool Contracts
-- [ADR-0007](ADR-0007-unified-service-ui-contract.md) — Unified Client-Service Contract
+- [ADR-0007](ADR-0007-unified-client-service-contract.md) — Unified Client-Service Contract
 - [ADR-0009](ADR-0009-core-architecture-principles.md) — Core FlossWare Architecture Principles
 - [ADR-0010](ADR-0010-rest-service-boundaries.md) — REST Service Boundaries
 - [ADR-0018](ADR-0018-mcp-capability-exposure.md) — MCP Capability Exposure

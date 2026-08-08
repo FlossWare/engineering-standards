@@ -1,86 +1,81 @@
-# ADR-0013: Bandit-Based Model Selection
+# ADR-0013: Adaptive Model Selection
 
 ## Status
 Accepted
 
 ## Date
-2026-08-05
+2026-08-07
 
 ## Context
 
-With hundreds of AI models available across free and paid providers, static model assignment (hardcoded routing tables, fixed priority lists) cannot adapt to:
+With hundreds of AI models available across free and paid providers, static model assignment cannot adapt to models that degrade, disappear, appear, specialize by task, or encounter changing provider limits.
 
-- Models that degrade or go offline without notice.
-- New models that appear in provider catalogs.
-- Task-type-specific strengths (some models excel at math, others at code generation).
-- Provider rate limits and availability that shift throughout the day.
+A routing strategy is needed that balances exploitation of known-good models with exploration of alternatives while adapting to performance signals.
 
-A routing strategy is needed that balances **exploitation** (use the best known model) with **exploration** (try lesser-known models to discover if they are better), while adapting to real-time performance signals.
-
-Internal FlossWare evaluations of multi-model routing observed that Thompson Sampling (Beta priors) performed well relative to simpler heuristics (e.g. epsilon-greedy), that modest exploration and observation caps helped adapt to drift, and that single-lineage pools were more prone to correlated failure modes. These are **internal operational observations**, not externally published reproducible research; specific hyperparameter values below are starting points, not universal optima.
+Internal FlossWare evaluations observed useful behavior from Thompson Sampling with Beta priors, modest exploration, and bounded observation history. These are internal operational observations, not externally published reproducible research.
 
 ## Decision
 
-Model selection for AI workloads SHOULD use a multi-armed bandit strategy, specifically Thompson Sampling with Beta priors.
+Model selection for AI workloads SHALL be adaptive, policy-driven, and replaceable. The default reference strategy is a multi-armed bandit using Thompson Sampling with Beta priors.
+
+The architectural requirement is adaptive selection, not permanent commitment to one mathematical algorithm.
 
 ### Core mechanism
 
-- Each model maintains a Beta(alpha, beta) distribution representing observed success/failure.
-- On each request, sample from each model's distribution; select the highest sample.
-- An epsilon parameter (a value of 0.10 SHOULD be used as a starting point) forces random exploration to prevent premature convergence.
-- An observation cap — the maximum combined alpha + beta before rescaling — SHOULD be set to approximately 50 as a starting point. This decays old observations so the bandit adapts to model drift rather than being dominated by historical performance.
+- Each model MAY maintain a statistical state representing observed success/failure.
+- The reference implementation uses a Beta(alpha, beta) distribution and Thompson Sampling.
+- Exploration parameters and observation limits SHALL be configuration, not architectural constants ([ADR-0016](ADR-0016-configuration-as-source-of-truth.md)).
+- Alternative adaptive selection algorithms MAY be introduced without changing service or agent contracts.
 
 ### Reward signal
 
 - Reward SHALL be based on objective, mechanically verifiable criteria when possible (correct answer, successful API call, response within latency budget).
-- Subjective quality scores MAY supplement but SHALL NOT replace objective signals.
-- Failed API calls (timeouts, errors) SHALL receive a penalty greater than an incorrect response to accelerate disabling of dead models.
+- Subjective quality scores MAY supplement but SHALL NOT replace objective signals where objective signals are available.
+- Failed API calls MAY receive a stronger penalty than incorrect responses to accelerate disabling of dead models.
 
 ### Integration with health checking
 
 - Models entering the routing pool SHOULD be health-checked before receiving production traffic (see [ADR-0015](ADR-0015-dynamic-service-discovery-ai-models.md)).
-- Models that fail health checks SHALL be removed from the routing pool and their bandit state frozen (not reset).
-- Models that recover from failure SHOULD re-enter with decayed priors, not fresh priors, to preserve learned performance history.
+- Models that fail health checks SHALL be removed from the routing pool and their selection state preserved where useful.
+- Models that recover SHOULD re-enter with retained or decayed history according to policy rather than requiring unconditional reset.
 
 ### Task-type specialization
 
-- Bandit state SHOULD be maintained per task type (e.g., code generation, summarization, math, general knowledge).
+- Selection state SHOULD be maintained per task type when workload characteristics differ materially.
 - A model that excels at one task type SHALL NOT be assumed to excel at others.
 
 ### Fallback behavior
 
-- When all models in the primary pool are unavailable, the system SHALL fall back to a curated list of known-reliable models.
-- Fallback lists SHOULD be filtered through the verified model set when available.
+- When all models in the primary pool are unavailable, the system SHALL fall back to a curated set of known-reliable verified models when available.
 
 ## Consequences
 
 ### Positive
-- Automatically discovers and promotes the best-performing models without manual curation.
-- Adapts to model degradation, rate limits, and provider outages in real time.
-- Exploration prevents lock-in to a single model that may not be globally optimal.
-- Per-task-type specialization captures model strengths that static routing misses.
+- Model routing adapts without requiring static priority tables.
+- The selection mechanism can evolve without changing external contracts.
+- Exploration can discover improvements while exploitation uses established performance.
 
 ### Negative
-- Exploration budget means some requests intentionally go to suboptimal models.
-- Bandit convergence requires sufficient traffic volume; low-traffic task types may never converge.
-- Observation cap introduces a recency bias that may discard valid long-term performance data.
-- Requires persistent state for bandit parameters (alpha/beta per model per task type).
+- Exploration can intentionally select a suboptimal model.
+- Low-traffic task types may not generate enough evidence for reliable adaptation.
+- Persistent selection state and observability are required.
 
 ## Alternatives Considered
 
-### Static routing table (hardcoded model priorities)
-Rejected — cannot adapt to model availability changes or discover new top performers.
+### Static routing table
+Rejected — cannot adapt to availability and quality changes.
 
-### Round-robin across all models
-Rejected — treats all models as equal; wastes calls on known-poor performers.
+### Round-robin
+Rejected — treats models as equivalent despite differing performance.
 
-### Epsilon-greedy without Thompson Sampling
-Rejected as default — internal evaluations favored Thompson Sampling’s confidence-weighted exploration/exploitation balance.
+### Fixed Thompson Sampling as an immutable architectural requirement
+Rejected — unnecessarily couples the architecture to one algorithm.
 
-### Thompson Sampling with Beta priors (chosen)
-Practical default for adaptive routing under uncertainty and changing model quality.
+### Adaptive selection with Thompson Sampling as the reference implementation (chosen)
+Preserves the architectural goal while allowing improved selection algorithms over time.
 
 ## Related ADRs
 - [ADR-0002](ADR-0002-ai-provider-abstraction.md) — AI Provider Abstraction
 - [ADR-0012](ADR-0012-multi-model-consensus-quality-gates.md) — Multi-Model Consensus for Quality Gates
 - [ADR-0015](ADR-0015-dynamic-service-discovery-ai-models.md) — Dynamic Service Discovery for AI Models
+- [ADR-0016](ADR-0016-configuration-as-source-of-truth.md) — Configuration as Source of Truth

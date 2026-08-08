@@ -6,7 +6,7 @@
 Accepted
 
 ## Date
-2026-07-31
+2026-08-07
 
 ## Context
 
@@ -21,12 +21,19 @@ Internal integrations SHOULD use versioned events and pub/sub contracts where as
 - **Ordering:** per-partition / per-aggregate key where the broker supports it; no global ordering assumption
 - **Idempotency:** consumers SHALL tolerate duplicates (idempotency keys or natural keys)
 - **Retries:** bounded retries with backoff; poison messages → dead-letter topic/queue
-- **Schema evolution:** events are versioned (`type` + `version`); producers MAY add optional fields; breaking changes require a new versioned type
+- **Schema evolution:** see versioning rules below
 - **Publish failure:** producers SHALL treat publish failure as operation failure unless a specific event class is documented as fire-and-forget
 
-Broker technology (Kafka, NATS, RabbitMQ, cloud buses, in-process for tests) SHOULD remain an implementation detail behind the contract.
+### Versioning rules
 
-Event envelope and versioning follow the model in [ADR-0001](ADR-0001-explicit-opt-in-cross-cutting-behavior.md).
+Aligned with [ADR-0001](ADR-0001-explicit-opt-in-cross-cutting-behavior.md):
+
+- `envelopeVersion` — version of the common envelope schema only
+- `type` — domain event identity; **breaking** payload changes SHALL introduce a new `type` (e.g. `.v2` suffix or successor name)
+- Producers MAY add optional payload fields for the same `type` when consumers can ignore unknowns
+- Do not overload a single `version` field for both envelope and domain semantics
+
+Broker technology (Kafka, NATS, RabbitMQ, cloud buses, in-process for tests) SHOULD remain an implementation detail behind the contract.
 
 ## Consequences
 
@@ -54,3 +61,4 @@ Rejected — hidden coupling and schema ownership conflicts.
 ## Related ADRs
 - [ADR-0001](ADR-0001-explicit-opt-in-cross-cutting-behavior.md) — Explicit Opt-In Cross-Cutting Behavior
 - [ADR-0006](ADR-0006-cross-cutting-decorators.md) — Cross-Cutting Decorators
+- [ADR-0010](ADR-0010-rest-service-boundaries.md) — REST Service Boundaries

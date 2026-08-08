@@ -12,8 +12,8 @@ FlossWare needs a clear split between synchronous external contracts, agent-faci
 
 ## Decision
 
-- **REST** SHALL be the default synchronous service contract for external clients where HTTP request/response semantics are appropriate ([ADR-0007](ADR-0007-unified-service-ui-contract.md)).
-- Clients SHALL NOT access databases directly.
+- **REST** SHALL be the default synchronous service contract for external clients where HTTP request/response semantics are appropriate ([ADR-0007](ADR-0007-unified-client-service-contract.md)).
+- Clients SHALL NOT access databases directly. See [ADR-0007](ADR-0007-unified-client-service-contract.md) for the definition of *client* and the in-process library exception.
 - Business capabilities SHALL be exposed through services.
 - **MCP** SHOULD be used for AI-agent capability discovery and invocation ([ADR-0004](ADR-0004-mcp-tool-contracts.md), [ADR-0018](ADR-0018-mcp-capability-exposure.md)).
 - MCP and REST MAY expose the same underlying capability; neither should duplicate business logic ([ADR-0020](ADR-0020-capability-protocol-separation.md)).
@@ -65,7 +65,7 @@ Matches modular service and agent integration needs without forcing one protocol
 ## Related ADRs
 - [ADR-0004](ADR-0004-mcp-tool-contracts.md) — MCP and Tool Contracts
 - [ADR-0005](ADR-0005-event-driven-internal-bus.md) — Event-Driven Internal Bus
-- [ADR-0007](ADR-0007-unified-service-ui-contract.md) — Unified Client-Service Contract
+- [ADR-0007](ADR-0007-unified-client-service-contract.md) — Unified Client-Service Contract
 - [ADR-0011](ADR-0011-stored-procedure-database-access.md) — Stored Procedure Database Access
 - [ADR-0018](ADR-0018-mcp-capability-exposure.md) — MCP Capability Exposure
 - [ADR-0019](ADR-0019-agent-tool-security-and-authorization.md) — Agent Tool Security and Authorization

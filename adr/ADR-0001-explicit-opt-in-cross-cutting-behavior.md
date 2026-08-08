@@ -20,7 +20,7 @@ The same problem appears beyond runtime annotations: a dependency on the classpa
 
 FlossWare components SHALL follow an explicit opt-in model.
 
-**Features MUST have explicit activation points and MUST NOT become active solely because a component, protocol adapter, dependency, or service is present.**
+**Features SHALL have explicit activation points and SHALL NOT become active solely because a component, protocol adapter, dependency, or service is present.**
 
 ### Default behavior
 
@@ -58,19 +58,41 @@ public void removeImage() {
 }
 ```
 
-Cross-cutting behaviors MUST be explicitly enabled by the developer (annotation, configuration, or registration).
+Cross-cutting behaviors SHALL be explicitly enabled by the developer (annotation, configuration, or registration).
 
 ## Event Contract Model
 
-When events are used, they MUST conform to versioned contracts.
+When events are used, they SHALL conform to versioned contracts.
 
 Events consist of:
 
-- a common envelope
-- a versioned event type
-- a defined payload schema
+- a common **envelope**
+- a **type** string identifying the domain event
+- a **payload** schema for that type
 
-Event schemas are maintained independently from implementations and are treated as public contracts between services.
+### Versioning rules
+
+| Field | Meaning |
+|-------|---------|
+| `envelopeVersion` | Version of the **envelope schema** (common fields such as id, type, timestamp, correlationId). Independent of domain payload evolution. |
+| `type` | Stable event name. Breaking payload changes SHALL use a **new type** (e.g. `pxe.boot.started.v2`), not only a payload field bump. |
+| payload schema | Defined per `type`; optional fields MAY be added in a backward-compatible way for the same type. |
+
+Example:
+
+```json
+{
+  "id": "uuid",
+  "envelopeVersion": "1.0",
+  "type": "pxe.boot.started.v1",
+  "source": "pxe-controller",
+  "timestamp": "2026-07-31T19:45:00Z",
+  "correlationId": "job-12345",
+  "payload": {}
+}
+```
+
+Do **not** use a single ambiguous `version` field for both envelope and domain semantics. Event schemas are maintained independently from implementations and are treated as public contracts between services.
 
 ## Agent Tool Contract Model
 

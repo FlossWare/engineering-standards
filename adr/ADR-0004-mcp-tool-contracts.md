@@ -39,6 +39,8 @@ Tools SHALL expose explicit contracts.
 
 The capability is the architectural center. Protocols are replaceable exposure mechanisms.
 
+**Read order for this cluster:** [ADR-0020](ADR-0020-capability-protocol-separation.md) → this ADR → [ADR-0018](ADR-0018-mcp-capability-exposure.md) → [ADR-0019](ADR-0019-agent-tool-security-and-authorization.md) → [ADR-0017](ADR-0017-agent-neutral-architecture.md).
+
 ## Consequences
 
 ### Positive
@@ -70,8 +72,9 @@ Matches consumer needs without forcing one protocol everywhere.
 - [ADR-0001](ADR-0001-explicit-opt-in-cross-cutting-behavior.md) — Explicit Opt-In Cross-Cutting Infrastructure Behavior
 - [ADR-0002](ADR-0002-ai-provider-abstraction.md) — AI Provider Abstraction
 - [ADR-0005](ADR-0005-event-driven-internal-bus.md) — Event-Driven Internal Bus
-- [ADR-0007](ADR-0007-unified-service-ui-contract.md) — Unified Client-Service Contract
+- [ADR-0007](ADR-0007-unified-client-service-contract.md) — Unified Client-Service Contract
 - [ADR-0010](ADR-0010-rest-service-boundaries.md) — REST Service Boundaries
+- [ADR-0017](ADR-0017-agent-neutral-architecture.md) — Agent-Neutral Architecture
 - [ADR-0018](ADR-0018-mcp-capability-exposure.md) — MCP Capability Exposure
 - [ADR-0019](ADR-0019-agent-tool-security-and-authorization.md) — Agent Tool Security and Authorization
 - [ADR-0020](ADR-0020-capability-protocol-separation.md) — Capability and Protocol Separation

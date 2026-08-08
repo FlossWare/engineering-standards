@@ -1,12 +1,10 @@
 # ADR-0002: AI Provider Abstraction
 
-> Formerly `docs/architecture/decisions/ADR-0001-ai-provider-abstraction.md`
-
 ## Status
 Accepted
 
 ## Date
-2026-07-31
+2026-08-07
 
 ## Context
 
@@ -14,13 +12,26 @@ FlossWare requires AI capabilities across code generation, review, retrieval, an
 
 Teams need to swap providers (hosted APIs, free tiers, local runtimes) without rewriting business logic.
 
+### Terminology
+
+In this ADR and related integration ADRs, **provider** means an **integration adapter**: endpoint pattern, authentication, and call format for invoking models ([ADR-0015](ADR-0015-dynamic-ai-model-inventory.md) bridge tables). It does **not** mean a consensus **diversity unit** (model family / training lineage); that sense is defined only in [ADR-0012](ADR-0012-multi-model-consensus-quality-gates.md).
+
+## Scope
+
+How FlossWare application and platform code obtains AI model inference and related model APIs.
+
+## Non-goals
+
+- Does not choose specific model vendors or ranking algorithms ([ADR-0013](ADR-0013-bandit-based-model-selection.md)).
+- Does not define agent tool protocols ([ADR-0004](ADR-0004-mcp-tool-contracts.md)).
+
 ## Decision
 
 All AI capabilities SHALL be accessed through provider abstractions.
 
 - Call sites depend on contracts (interfaces / ports), not concrete SDKs.
 - Providers MAY include hosted APIs, free services, or local inference runtimes when explicitly enabled (see [ADR-0003](ADR-0003-no-local-inference-default.md)).
-- Routing, fallback, and consensus policies sit above the provider layer.
+- Routing, fallback, and consensus policies sit above the provider layer ([ADR-0012](ADR-0012-multi-model-consensus-quality-gates.md), [ADR-0013](ADR-0013-bandit-based-model-selection.md)).
 
 ## Consequences
 
@@ -49,3 +60,6 @@ Accepted — centralizes integration and preserves deployment flexibility.
 - [ADR-0003](ADR-0003-no-local-inference-default.md) — No Local Inference by Default
 - [ADR-0004](ADR-0004-mcp-tool-contracts.md) — MCP and Tool Contracts
 - [ADR-0008](ADR-0008-free-first-modular-platform.md) — Free-First Modular Platform
+- [ADR-0012](ADR-0012-multi-model-consensus-quality-gates.md) — Multi-Model Consensus for Quality Gates
+- [ADR-0013](ADR-0013-bandit-based-model-selection.md) — Bandit-Based Model Selection
+- [ADR-0015](ADR-0015-dynamic-ai-model-inventory.md) — Dynamic AI Model Inventory

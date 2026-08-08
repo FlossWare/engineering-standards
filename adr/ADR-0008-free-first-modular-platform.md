@@ -1,16 +1,23 @@
-# ADR-0008: Free First Modular Platform
-
-> Formerly `docs/architecture/decisions/ADR-0007-free-first-modular-platform.md`
+# ADR-0008: Free-First Modular Platform
 
 ## Status
 Accepted
 
 ## Date
-2026-07-31
+2026-08-07
 
 ## Context
 
 FlossWare aims to stay accessible to individuals and small teams while remaining capable enough for serious infrastructure automation. Defaulting to commercial services raises cost and lock-in; forbidding them entirely blocks justified quality or capability gaps.
+
+## Scope
+
+Default posture for selecting open/free vs commercial components across FlossWare repositories.
+
+## Non-goals
+
+- Does not ban commercial components.
+- Does not rank specific products.
 
 ## Decision
 

@@ -35,7 +35,7 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0012](adr/ADR-0012-multi-model-consensus-quality-gates.md) | Multi-Model Consensus for Quality Gates |
 | [ADR-0013](adr/ADR-0013-bandit-based-model-selection.md) | Bandit-Based Model Selection |
 | [ADR-0014](adr/ADR-0014-token-budget-management.md) | Token Budget Management |
-| [ADR-0015](adr/ADR-0015-dynamic-service-discovery-ai-models.md) | Dynamic Service Discovery for AI Models |
+| [ADR-0015](adr/ADR-0015-dynamic-ai-model-inventory.md) | Dynamic AI Model Inventory |
 | [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md) | Configuration as Source of Truth |
 | [ADR-0017](adr/ADR-0017-agent-neutral-architecture.md) | Agent-Neutral Architecture |
 | [ADR-0018](adr/ADR-0018-mcp-capability-exposure.md) | MCP Capability Exposure |
@@ -55,7 +55,7 @@ New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 ## Reference architecture
 
 - [Reference architecture diagram](docs/architecture/reference-architecture.md) (Mermaid)
-- [tftp-os UI contract validation](docs/architecture/reference-implementations/tftp-os-ui-contract.md)
+- [tftp-os client contract validation](docs/architecture/reference-implementations/tftp-os-ui-contract.md)
 
 ## ADR Process
 

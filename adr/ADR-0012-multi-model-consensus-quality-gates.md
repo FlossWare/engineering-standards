@@ -45,25 +45,27 @@ Single-model evaluation SHOULD be preferred for:
 
 ### Consensus panel composition
 
-- Panels SHOULD include models from at least **3 distinct diversity units** (see *Provider diversity* below).
+- Panels SHOULD include models from at least **3 distinct diversity units** (see below).
 - Panels SHOULD use a minimum of 3 voters; 5–7 SHOULD be used for quality gates.
 - The same model SHALL NOT serve as both generator and sole evaluator of an output (anti-self-referential safeguard).
 
-### Provider diversity (measurable definition)
+### Diversity units (not API “providers”)
 
 **Diversity unit** means an independent **model family / training organization lineage**, not merely a different URL or reseller.
 
+This is distinct from **provider** in [ADR-0002](ADR-0002-ai-provider-abstraction.md) / [ADR-0015](ADR-0015-dynamic-ai-model-inventory.md), which means an integration adapter (endpoint, auth, call format).
+
 | Counts toward diversity? | Example |
 |--------------------------|---------|
-| **Yes** | Distinct model families from different training organizations (e.g. different labs’ flagship lines) |
-| **Weak / partial** | Different model families from the **same** organization (better than one family, still correlated) |
-| **No** | Same model (or fine-tune of the same base) exposed via direct API vs cloud proxy vs second marketplace |
+| **Yes** | Distinct model families from different training organizations |
+| **Weak / partial** | Different model families from the **same** organization |
+| **No** | Same model exposed via direct API vs cloud proxy vs marketplace |
 | **No** | Same weights behind two endpoint hostnames or regions |
 
 Rules:
 
-- “3 distinct providers” in operational configs SHALL mean **3 diversity units** as defined above.
-- Hosting platform alone (AWS vs Azure vs direct) SHALL NOT satisfy diversity if the underlying model family is the same.
+- Operational configs that say “3 distinct providers” for consensus SHALL mean **3 diversity units** as defined above.
+- Hosting platform alone SHALL NOT satisfy diversity if the underlying model family is the same.
 - When only correlated models are available, panels SHOULD document reduced diversity and prefer human review for contested findings.
 
 ### Handling disagreement
@@ -91,7 +93,7 @@ Rules:
 - Higher latency and API cost per review cycle.
 - Consensus can still converge on a wrong answer when models share training data biases.
 - Requires infrastructure to fan out prompts and collect votes.
-- Rate limits across providers can cause partial panel failures; retry logic is necessary.
+- Rate limits across integration providers can cause partial panel failures; retry logic is necessary.
 
 ## Alternatives Considered
 
@@ -112,4 +114,4 @@ Balances thoroughness for high-stakes decisions with efficiency for routine oper
 - [ADR-0002](ADR-0002-ai-provider-abstraction.md) — AI Provider Abstraction
 - [ADR-0008](ADR-0008-free-first-modular-platform.md) — Free-First Modular Platform
 - [ADR-0013](ADR-0013-bandit-based-model-selection.md) — Bandit-Based Model Selection
-- [ADR-0015](ADR-0015-dynamic-service-discovery-ai-models.md) — Dynamic Service Discovery for AI Models
+- [ADR-0015](ADR-0015-dynamic-ai-model-inventory.md) — Dynamic AI Model Inventory

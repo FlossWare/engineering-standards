@@ -23,7 +23,7 @@ flowchart TB
   end
 
   subgraph AI_Orchestration["AI orchestration"]
-    DISC[Dynamic model discovery]
+    DISC[Dynamic model inventory]
     BANDIT[Bandit model selection]
     CONSENSUS[Multi-model consensus gates]
     TOKENS[Token budget mgmt\nopt-in]
@@ -83,7 +83,7 @@ flowchart TB
 | REST edge | Synchronous external contract | [ADR-0010](../../adr/ADR-0010-rest-service-boundaries.md) |
 | MCP edge | Agent tool discovery/invocation | [ADR-0004](../../adr/ADR-0004-mcp-tool-contracts.md), [ADR-0018](../../adr/ADR-0018-mcp-capability-exposure.md), [ADR-0019](../../adr/ADR-0019-agent-tool-security-and-authorization.md) |
 | Service / capability | Business behavior; protocol-independent | [ADR-0010](../../adr/ADR-0010-rest-service-boundaries.md), [ADR-0020](../../adr/ADR-0020-capability-protocol-separation.md) |
-| AI orchestration | Provider abstraction, discovery, routing, consensus, token budgets | [ADR-0002](../../adr/ADR-0002-ai-provider-abstraction.md), [ADR-0012](../../adr/ADR-0012-multi-model-consensus-quality-gates.md), [ADR-0013](../../adr/ADR-0013-bandit-based-model-selection.md), [ADR-0014](../../adr/ADR-0014-token-budget-management.md), [ADR-0015](../../adr/ADR-0015-dynamic-service-discovery-ai-models.md) |
+| AI orchestration | Provider abstraction, model inventory, routing, consensus, token budgets | [ADR-0002](../../adr/ADR-0002-ai-provider-abstraction.md), [ADR-0012](../../adr/ADR-0012-multi-model-consensus-quality-gates.md), [ADR-0013](../../adr/ADR-0013-bandit-based-model-selection.md), [ADR-0014](../../adr/ADR-0014-token-budget-management.md), [ADR-0015](../../adr/ADR-0015-dynamic-ai-model-inventory.md) |
 | Message bus | Async integration; opt-in publish | [ADR-0005](../../adr/ADR-0005-event-driven-internal-bus.md), [ADR-0001](../../adr/ADR-0001-explicit-opt-in-cross-cutting-behavior.md) |
 | Stored procedures | Selective data-centric logic | [ADR-0011](../../adr/ADR-0011-stored-procedure-database-access.md) |
 | Database | Persistence | [ADR-0011](../../adr/ADR-0011-stored-procedure-database-access.md) |
@@ -105,4 +105,4 @@ flowchart TB
 
 ## Reference implementations
 
-- [tftp-os UI contract validation](reference-implementations/tftp-os-ui-contract.md)
+- [tftp-os client contract validation](reference-implementations/tftp-os-ui-contract.md)

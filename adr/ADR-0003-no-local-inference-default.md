@@ -1,18 +1,25 @@
 # ADR-0003: No Local Inference by Default
 
-> Formerly `docs/architecture/decisions/ADR-0002-no-local-inference-default.md`
-
 ## Status
 Accepted
 
 ## Date
-2026-07-31
+2026-08-07
 
 ## Context
 
 AI systems should remain usable on small infrastructure, cloud environments, and developer workstations. Making local GPU inference the default would raise the hardware bar, complicate onboarding, and couple product success to model packaging and driver stacks.
 
 At the same time, privacy, air-gapped, cost, and latency scenarios legitimately need local models.
+
+## Scope
+
+Default deployment topology for model execution in FlossWare systems.
+
+## Non-goals
+
+- Does not ban local inference.
+- Does not specify which local runtimes to package.
 
 ## Decision
 
@@ -53,3 +60,4 @@ Balances accessibility with the ability to run fully local when justified.
 ## Related ADRs
 - [ADR-0002](ADR-0002-ai-provider-abstraction.md) — AI Provider Abstraction
 - [ADR-0008](ADR-0008-free-first-modular-platform.md) — Free-First Modular Platform
+- [ADR-0015](ADR-0015-dynamic-ai-model-inventory.md) — Dynamic AI Model Inventory

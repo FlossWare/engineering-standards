@@ -1,16 +1,23 @@
-# ADR-0006: Cross Cutting Decorators
-
-> Formerly `docs/architecture/decisions/ADR-0005-cross-cutting-decorators.md`
+# ADR-0006: Cross-Cutting Decorators
 
 ## Status
 Accepted
 
 ## Date
-2026-07-31
+2026-08-07
 
 ## Context
 
 When cross-cutting behavior is explicitly enabled, a consistent implementation style keeps business logic free of infrastructure concerns. Without guidance, teams mix manual calls, global interceptors, and ad-hoc wrappers.
+
+## Scope
+
+Preferred *implementation mechanism* for opted-in cross-cutting concerns in FlossWare services and libraries.
+
+## Non-goals
+
+- Does not decide *whether* a behavior is enabled (see [ADR-0001](ADR-0001-explicit-opt-in-cross-cutting-behavior.md)).
+- Does not mandate a single language feature (annotations, middleware, or interceptors may all satisfy the pattern).
 
 ## Decision
 

@@ -1,6 +1,8 @@
 # Reference implementation: flossware-tftp-os ↔ ADR-0007
 
-Validates [ADR-0007 Unified Service UI Contract](../../../adr/ADR-0007-unified-service-ui-contract.md) against [FlossWare/flossware-tftp-os](https://github.com/FlossWare/flossware-tftp-os).
+Validates [ADR-0007 Unified Client-Service Contract](../../../adr/ADR-0007-unified-client-service-contract.md) against [FlossWare/flossware-tftp-os](https://github.com/FlossWare/flossware-tftp-os).
+
+**Scope of this sample:** operator / application clients over REST (and in-process library use). It does **not** validate MCP agent exposure ([ADR-0018](../../../adr/ADR-0018-mcp-capability-exposure.md)); agent paths are out of scope for this reference implementation.
 
 ## Verdict
 
@@ -8,7 +10,7 @@ Validates [ADR-0007 Unified Service UI Contract](../../../adr/ADR-0007-unified-s
 
 | Check | Result |
 |-------|--------|
-| Stable service API for UIs | **Pass** — FastAPI `/api/v1/*` |
+| Stable service API for clients | **Pass** — FastAPI `/api/v1/*` |
 | Multiple frontends, one contract | **Pass** — Java TUI, Swing, Android, iOS via REST |
 | Clients do not access DB directly | **Pass** — no client DB usage observed |
 | All UIs forced through REST | **Partial** — Python TUI/GUI import library in-process |
@@ -29,7 +31,7 @@ Validates [ADR-0007 Unified Service UI Contract](../../../adr/ADR-0007-unified-s
 Interpretation for ADR-0007:
 
 - **SHALL integrate through stable service APIs** applies to independently deployed / cross-language clients (Java, mobile).
-- **Same-process library use** (Python TUI/GUI) is acceptable when the library *is* the service implementation boundary and does not embed a second copy of business rules per UI. Prefer REST when the UI is remote or polyglot.
+- **Same-process library use** (Python TUI/GUI) is acceptable when the library *is* the service implementation boundary and does not embed a second copy of business rules per UI. Prefer REST when the client is remote or polyglot.
 
 ## REST API surface (`/api/v1`)
 
@@ -75,5 +77,5 @@ Source: [`flossware-tftp-os-web/.../app.py`](https://github.com/FlossWare/flossw
 
 1. Treat **tftp-os `/api/v1`** as the reference operator API style for similar provisioning tools.
 2. Prefer publishing OpenAPI from FastAPI (`/docs`) as the shared machine-readable contract.
-3. For new polyglot UIs, consume REST only; reserve direct library imports for same-language, same-process tools.
+3. For new polyglot clients, consume REST only; reserve direct library imports for same-language, same-process tools.
 4. Optionally track pxe-os/virt-os conformance as separate issues on those repos.

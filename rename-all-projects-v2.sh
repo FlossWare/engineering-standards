@@ -1,0 +1,346 @@
+#!/bin/bash
+#
+# Rename All FlossWare j* Projects (V2 - XML-aware)
+#
+# Renames: j{name} → {name}-java
+# Packages: org.flossware.j{name} → org.flossware.{name}
+# Version: All → 2.0 (breaking change)
+#
+# Uses xmlstarlet for safe XML editing
+#
+# Usage:
+#   ./rename-all-projects-v2.sh --all
+#   ./rename-all-projects-v2.sh --project jcommons
+#   ./rename-all-projects-v2.sh --all --dry-run
+#
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+DRY_RUN=false
+TARGET_PROJECT=""
+APPLY_ALL=false
+
+# Project mapping: old_name:new_name:old_package:new_package
+PROJECTS=(
+    "jcommons:commons-java:jcommons:commons"
+    "jcollections:collections-java:jcollections:collections"
+    "jcurses:curses-java:jcurses:curses"
+    "jclassloader:classloader-java:jclassloader:classloader"
+    "jcloudstorage:cloudstorage-java:jcloudstorage:cloudstorage"
+    "jcontainer:container-java:jcontainer:container"
+    "jdiskwipe:diskwipe-java:jdiskwipe:diskwipe"
+    "jeventbus:eventbus-java:jeventbus:eventbus"
+    "jfiletransfer:filetransfer-java:jfiletransfer:filetransfer"
+    "jfs-watcher:fs-watcher-java:jfswatcher:fswatcher"
+    "jmessaging:messaging-java:jmessaging:messaging"
+    "jnexus:nexus-java:jnexus:nexus"
+    "jplatform:platform-java:jplatform:platform"
+    "jremote:remote-java:jremote:remote"
+    "jresource-monitor:resource-monitor-java:jresourcemonitor:resourcemonitor"
+    "jthreadpool:threadpool-java:jthreadpool:threadpool"
+    "jvcs:vcs-java:jvcs:vcs"
+    "build-tools:build-tools:jbuild-tools:build-tools-java"
+)
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --all)
+            APPLY_ALL=true
+            shift
+            ;;
+        --project)
+            TARGET_PROJECT="$2"
+            shift 2
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: $0 [--all | --project <old-name>] [--dry-run]"
+            exit 1
+            ;;
+    esac
+done
+
+echo "========================================"
+echo "FlossWare Project Rename V2 (XML-aware)"
+echo "========================================"
+echo "Dry Run: $DRY_RUN"
+echo
+echo "Changes:"
+echo "  - Repository: j{name} → {name}-java"
+echo "  - Package: org.flossware.j{name} → org.flossware.{name}"
+echo "  - Version: * → 2.0"
+echo "  - Artifact ID: j{name} → {name}-java"
+echo
+
+rename_project() {
+    local mapping="$1"
+    IFS=':' read -r old_name new_name old_pkg new_pkg <<< "$mapping"
+
+    local old_dir="$PARENT_DIR/$old_name"
+    local new_dir="$PARENT_DIR/$new_name"
+
+    echo "📦 Processing: $old_name → $new_name"
+    echo "   Package: org.flossware.$old_pkg → org.flossware.$new_pkg"
+
+    # Check if old directory exists
+    if [[ ! -d "$old_dir" ]]; then
+        echo "   ⚠️  SKIPPED - Directory not found: $old_dir"
+        echo
+        return
+    fi
+
+    if [[ "$DRY_RUN" == true ]]; then
+        echo "   ℹ️  Would rename (dry run):"
+        echo "      - GitHub repo: $old_name → $new_name"
+        echo "      - Local dir: $old_name → $new_name"
+        echo "      - Packages: org.flossware.$old_pkg → org.flossware.$new_pkg"
+        echo "      - Version: → 2.0"
+        echo
+        return
+    fi
+
+    cd "$old_dir"
+
+    # Step 1: Rename GitHub repository
+    echo "   🔄 Renaming GitHub repository..."
+    if gh api repos/FlossWare/$old_name -X PATCH -f name="$new_name" > /dev/null 2>&1; then
+        echo "   ✅ GitHub repo renamed"
+    else
+        echo "   ⚠️  Failed to rename GitHub repo (may already be renamed or need manual rename)"
+    fi
+
+    # Step 2: Update git remote URL
+    echo "   🔄 Updating git remote..."
+    # Find the actual remote name (could be 'origin' or 'github')
+    REMOTE_NAME=$(git remote | grep -E '^(origin|github)$' | head -1)
+    if [[ -z "$REMOTE_NAME" ]]; then
+        REMOTE_NAME="origin"  # Default
+    fi
+    git remote set-url "$REMOTE_NAME" "https://github.com/FlossWare/$new_name.git"
+    echo "   ✅ Git remote updated ($REMOTE_NAME)"
+
+    # Step 3: Backup POM
+    cp pom.xml pom.xml.backup-rename
+
+    # Step 4: Update POM using xmlstarlet (XML-aware)
+    echo "   🔄 Updating pom.xml (XML-safe)..."
+
+    # Update artifactId
+    xmlstarlet ed --inplace \
+        -N pom="http://maven.apache.org/POM/4.0.0" \
+        -u "/pom:project/pom:artifactId" \
+        -v "$new_name" \
+        pom.xml
+
+    # Update version to 2.0
+    xmlstarlet ed --inplace \
+        -N pom="http://maven.apache.org/POM/4.0.0" \
+        -u "/pom:project/pom:version" \
+        -v "2.0" \
+        pom.xml
+
+    # Update name
+    local display_name=$(echo "$new_name" | sed 's/-java//' | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+    xmlstarlet ed --inplace \
+        -N pom="http://maven.apache.org/POM/4.0.0" \
+        -u "/pom:project/pom:name" \
+        -v "FlossWare $display_name" \
+        pom.xml
+
+    # Update SCM URLs using sed (simpler for text replacement)
+    sed -i "s|FlossWare/$old_name|FlossWare/$new_name|g" pom.xml
+
+    # Update cross-project dependencies
+    for other_mapping in "${PROJECTS[@]}"; do
+        IFS=':' read -r other_old other_new _ _ <<< "$other_mapping"
+        if [[ "$other_old" != "$old_name" ]]; then
+            # Update dependency artifactIds
+            xmlstarlet ed --inplace \
+                -N pom="http://maven.apache.org/POM/4.0.0" \
+                -u "//pom:dependency[pom:artifactId='$other_old']/pom:artifactId" \
+                -v "$other_new" \
+                pom.xml 2>/dev/null || true
+        fi
+    done
+
+    echo "   ✅ Updated pom.xml"
+
+    # Step 5: Rename Java package directories
+    echo "   🔄 Renaming package directories..."
+    if [[ -d "src/main/java/org/flossware/$old_pkg" ]]; then
+        mkdir -p "src/main/java/org/flossware/$new_pkg"
+        # Move files one by one to avoid issues with nested directories
+        find "src/main/java/org/flossware/$old_pkg" -maxdepth 1 -type f -exec mv {} "src/main/java/org/flossware/$new_pkg/" \;
+        # Move subdirectories
+        find "src/main/java/org/flossware/$old_pkg" -mindepth 1 -maxdepth 1 -type d -exec sh -c 'dir="{}"; base=$(basename "$dir"); mkdir -p "src/main/java/org/flossware/'"$new_pkg"'/$base"; mv "$dir"/* "src/main/java/org/flossware/'"$new_pkg"'/$base/" 2>/dev/null || true; rmdir "$dir" 2>/dev/null || true' \;
+        rmdir "src/main/java/org/flossware/$old_pkg" 2>/dev/null || true
+        echo "   ✅ Renamed src/main/java packages"
+    fi
+
+    if [[ -d "src/test/java/org/flossware/$old_pkg" ]]; then
+        mkdir -p "src/test/java/org/flossware/$new_pkg"
+        # Move files one by one
+        find "src/test/java/org/flossware/$old_pkg" -maxdepth 1 -type f -exec mv {} "src/test/java/org/flossware/$new_pkg/" \;
+        # Move subdirectories
+        find "src/test/java/org/flossware/$old_pkg" -mindepth 1 -maxdepth 1 -type d -exec sh -c 'dir="{}"; base=$(basename "$dir"); mkdir -p "src/test/java/org/flossware/'"$new_pkg"'/$base"; mv "$dir"/* "src/test/java/org/flossware/'"$new_pkg"'/$base/" 2>/dev/null || true; rmdir "$dir" 2>/dev/null || true' \;
+        rmdir "src/test/java/org/flossware/$old_pkg" 2>/dev/null || true
+        echo "   ✅ Renamed src/test/java packages"
+    fi
+
+    # Step 6: Update package declarations in all Java files
+    echo "   🔄 Updating package declarations..."
+    find src -name "*.java" -type f -exec sed -i "s/package org\.flossware\.$old_pkg/package org.flossware.$new_pkg/g" {} \;
+    echo "   ✅ Updated package declarations"
+
+    # Step 7: Update import statements in all Java files
+    echo "   🔄 Updating import statements..."
+    find src -name "*.java" -type f -exec sed -i "s/import org\.flossware\.$old_pkg/import org.flossware.$new_pkg/g" {} \;
+    echo "   ✅ Updated imports"
+
+    # Step 8: Update module-info.java if exists
+    if [[ -f "src/main/java/module-info.java" ]]; then
+        sed -i "s/org\.flossware\.$old_pkg/org.flossware.$new_pkg/g" src/main/java/module-info.java
+        echo "   ✅ Updated module-info.java"
+    fi
+
+    # Step 9: Update README if exists
+    if [[ -f "README.md" ]]; then
+        sed -i "s/$old_name/$new_name/g" README.md
+        sed -i "s/org\.flossware\.$old_pkg/org.flossware.$new_pkg/g" README.md
+        echo "   ✅ Updated README.md"
+    fi
+
+    # Step 10: Update site.xml if exists
+    if [[ -f "src/site/site.xml" ]]; then
+        sed -i "s/$old_name/$new_name/g" src/site/site.xml
+        echo "   ✅ Updated src/site/site.xml"
+    fi
+
+    # Step 11: Update site index.md if exists
+    if [[ -f "src/site/markdown/index.md" ]]; then
+        sed -i "s/$old_name/$new_name/g" src/site/markdown/index.md
+        echo "   ✅ Updated src/site/markdown/index.md"
+    fi
+
+    # Step 12: Verify POM is valid XML
+    echo "   🔄 Validating pom.xml..."
+    if xmlstarlet val pom.xml > /dev/null 2>&1; then
+        echo "   ✅ POM is valid XML"
+    else
+        echo "   ❌ POM validation failed! Restoring backup..."
+        mv pom.xml.backup-rename pom.xml
+        echo "   ⚠️  POM restore complete - manual fix needed"
+        return
+    fi
+
+    # Step 13: Commit changes
+    echo "   🔄 Committing changes..."
+    git add -A
+    git commit -m "$(cat <<EOF
+Rename project: $old_name → $new_name
+
+Breaking Changes:
+- Repository: $old_name → $new_name
+- Artifact: $old_name → $new_name
+- Package: org.flossware.$old_pkg → org.flossware.$new_pkg
+- Version: bumped to 2.0
+
+This is a MAJOR version bump due to breaking changes.
+
+Migration Guide:
+- Update dependency artifactId: $old_name → $new_name
+- Update imports: org.flossware.$old_pkg → org.flossware.$new_pkg
+- Update version to 2.0
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+EOF
+)"
+    echo "   ✅ Changes committed"
+
+    # Step 14: Push to GitHub
+    echo "   🔄 Pushing to GitHub..."
+    if git push; then
+        echo "   ✅ Pushed to GitHub"
+    else
+        echo "   ⚠️  Failed to push - may need manual push"
+        echo "   💡 Run: cd $old_dir && git push --set-upstream origin main"
+    fi
+
+    # Step 15: Rename local directory
+    echo "   🔄 Renaming local directory..."
+    cd "$PARENT_DIR"
+    if [[ "$old_name" != "$new_name" ]]; then
+        mv "$old_name" "$new_name"
+        echo "   ✅ Renamed: $old_name → $new_name"
+    fi
+
+    echo "   ✅ COMPLETE: $new_name"
+    echo
+}
+
+# Process projects
+if [[ "$APPLY_ALL" == true ]]; then
+    echo "Renaming all projects..."
+    echo
+
+    for mapping in "${PROJECTS[@]}"; do
+        rename_project "$mapping"
+    done
+elif [[ -n "$TARGET_PROJECT" ]]; then
+    # Find matching project
+    found=false
+    for mapping in "${PROJECTS[@]}"; do
+        IFS=':' read -r old_name _ _ _ <<< "$mapping"
+        if [[ "$old_name" == "$TARGET_PROJECT" ]]; then
+            rename_project "$mapping"
+            found=true
+            break
+        fi
+    done
+
+    if [[ "$found" == false ]]; then
+        echo "Error: Project not found: $TARGET_PROJECT"
+        echo
+        echo "Available projects:"
+        for mapping in "${PROJECTS[@]}"; do
+            IFS=':' read -r old_name new_name _ _ <<< "$mapping"
+            echo "  $old_name → $new_name"
+        done
+        exit 1
+    fi
+else
+    echo "Error: Must specify --all or --project <name>"
+    echo "Usage: $0 [--all | --project <old-name>] [--dry-run]"
+    exit 1
+fi
+
+echo "========================================"
+echo "Summary"
+echo "========================================"
+if [[ "$DRY_RUN" == true ]]; then
+    echo "Dry run complete. No changes made."
+    echo "Run without --dry-run to execute renames."
+else
+    echo "Project renames complete!"
+    echo
+    echo "⚠️  BREAKING CHANGES - Version 2.0"
+    echo
+    echo "Users must update:"
+    echo "  1. Maven dependencies (artifactId changed)"
+    echo "  2. Import statements (package names changed)"
+    echo "  3. Versions to 2.0"
+    echo
+    echo "📋 Next Steps:"
+    echo "  1. Verify all builds work: cd {project} && mvn clean verify"
+    echo "  2. Update cross-project dependencies"
+    echo "  3. Create migration guide for users"
+    echo "  4. Announce breaking changes"
+fi
+echo

@@ -1,0 +1,11 @@
+pluginManagement {
+    repositories {
+        maven {
+            url 'https://packagecloud.io/flossware/releases/maven2/'
+        }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = '{PROJECT_NAME}'

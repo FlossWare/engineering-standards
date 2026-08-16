@@ -1,0 +1,180 @@
+name: Gradle Quality Gate
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+  schedule:
+    # Run weekly on Monday at 2:20 AM UTC
+    - cron: '20 2 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Run Gradle check (all quality checks)
+        id: gradle-check
+        continue-on-error: true
+        run: |
+          ./gradlew check --no-daemon 2>&1 | tee gradle-check.log
+          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+
+      - name: Parse JaCoCo coverage
+        if: always()
+        id: jacoco
+        run: |
+          if [ -f build/reports/jacoco/test/html/index.html ]; then
+            INSTRUCTION_COVERAGE=$(grep -oP 'Total.*?<td class="ctr2">(\d+)%' build/reports/jacoco/test/html/index.html | grep -oP '\d+%' | head -1 || echo "0%")
+            BRANCH_COVERAGE=$(grep -oP 'Total.*?<td class="ctr2">(\d+)%' build/reports/jacoco/test/html/index.html | grep -oP '\d+%' | tail -1 || echo "0%")
+            echo "instruction_coverage=${INSTRUCTION_COVERAGE}" >> $GITHUB_OUTPUT
+            echo "branch_coverage=${BRANCH_COVERAGE}" >> $GITHUB_OUTPUT
+          else
+            echo "instruction_coverage=N/A" >> $GITHUB_OUTPUT
+            echo "branch_coverage=N/A" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Parse SpotBugs results
+        if: always()
+        id: spotbugs
+        run: |
+          if [ -f build/reports/spotbugs/main.xml ]; then
+            BUG_COUNT=$(grep -c '<BugInstance' build/reports/spotbugs/main.xml || echo "0")
+            echo "bug_count=${BUG_COUNT}" >> $GITHUB_OUTPUT
+          else
+            echo "bug_count=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Parse PMD results
+        if: always()
+        id: pmd
+        run: |
+          if [ -f build/reports/pmd/main.xml ]; then
+            VIOLATION_COUNT=$(grep -c '<violation' build/reports/pmd/main.xml || echo "0")
+            echo "violation_count=${VIOLATION_COUNT}" >> $GITHUB_OUTPUT
+          else
+            echo "violation_count=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Parse Checkstyle results
+        if: always()
+        id: checkstyle
+        run: |
+          if [ -f build/reports/checkstyle/main.xml ]; then
+            ERROR_COUNT=$(grep -c 'severity="error"' build/reports/checkstyle/main.xml || echo "0")
+            echo "error_count=${ERROR_COUNT}" >> $GITHUB_OUTPUT
+          else
+            echo "error_count=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: |
+            build/reports/jacoco/
+            build/reports/spotbugs/
+            build/reports/pmd/
+            build/reports/checkstyle/
+            gradle-check.log
+          retention-days: 30
+
+      - name: Comment on PR with quality metrics
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const instructionCov = '${{ steps.jacoco.outputs.instruction_coverage }}';
+            const branchCov = '${{ steps.jacoco.outputs.branch_coverage }}';
+            const spotbugs = '${{ steps.spotbugs.outputs.bug_count }}';
+            const pmd = '${{ steps.pmd.outputs.violation_count }}';
+            const checkstyle = '${{ steps.checkstyle.outputs.error_count }}';
+
+            const comment = `## Quality Gate Report (Gradle)
+
+            | Tool | Status | Metrics |
+            |------|--------|---------|
+            | **JaCoCo** | ${instructionCov !== 'N/A' && instructionCov.replace('%','') >= 93 ? 'PASS' : 'FAIL'} | Instruction: ${instructionCov}, Branch: ${branchCov} |
+            | **SpotBugs** | ${spotbugs == 0 ? 'PASS' : 'FAIL'} | ${spotbugs} bugs found |
+            | **PMD** | ${pmd == 0 ? 'PASS' : 'FAIL'} | ${pmd} violations |
+            | **Checkstyle** | ${checkstyle == 0 ? 'PASS' : 'FAIL'} | ${checkstyle} errors |
+
+            ${spotbugs > 0 || pmd > 0 || checkstyle > 0 ? '**Quality gates failed!** Fix issues before merging.' : '**All quality gates passed!**'}
+
+            <details>
+            <summary>View detailed reports</summary>
+
+            Download the \`quality-reports\` artifact from this workflow run for detailed analysis.
+
+            - **JaCoCo**: \`build/reports/jacoco/test/html/index.html\`
+            - **SpotBugs**: \`build/reports/spotbugs/main.html\`
+            - **PMD**: \`build/reports/pmd/main.html\`
+            - **Checkstyle**: \`build/reports/checkstyle/main.html\`
+
+            </details>
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Fail workflow if quality gates not met
+        if: |
+          steps.gradle-check.outputs.exit_code != 0 ||
+          steps.spotbugs.outputs.bug_count > 0 ||
+          steps.pmd.outputs.violation_count > 0 ||
+          steps.checkstyle.outputs.error_count > 0
+        run: |
+          echo "Quality gates failed!"
+          echo "Exit code: ${{ steps.gradle-check.outputs.exit_code }}"
+          echo "SpotBugs: ${{ steps.spotbugs.outputs.bug_count }} bugs"
+          echo "PMD: ${{ steps.pmd.outputs.violation_count }} violations"
+          echo "Checkstyle: ${{ steps.checkstyle.outputs.error_count }} errors"
+          exit 1

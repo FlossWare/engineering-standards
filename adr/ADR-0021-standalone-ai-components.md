@@ -8,6 +8,17 @@ Proposed
 
 2026-08-21
 
+## Scope
+
+This ADR applies to reusable FlossWare `*-ai` capability libraries and their optional agent/protocol integrations. It governs dependency direction, standalone usability, composability, and separation between capability implementations and agent/transport adapters.
+
+## Non-goals
+
+- This ADR does not require every component to expose MCP.
+- This ADR does not prescribe one agent integration mechanism for every agent.
+- This ADR does not require Loom to provide identical integration behavior to every external runtime.
+- This ADR does not prevent a component from offering optional Loom-specific or agent-specific adapters.
+
 ## Context
 
 FlossWare is developing reusable `*-ai` components for capabilities such as resilience, budgeting, caching, security, observability, routing, structured output, consensus, evaluation, RAG, workflow, streaming, conversation, learning, and optimization.

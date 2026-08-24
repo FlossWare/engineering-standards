@@ -8,9 +8,9 @@ Accepted
 
 ## Context
 
-FlossWare requires AI capabilities across code generation, review, retrieval, and orchestration. Binding the platform to a single model vendor, runtime, or deployment topology would create lock-in, complicate testing, and prevent free-first or air-gapped deployments.
+FlossWare requires AI capabilities across code generation, review, retrieval, and orchestration. Binding the platform to a single model vendor, runtime, or deployment topology would create lock-in, complicate testing, and constrain workload-specific policy.
 
-Teams need to swap providers (hosted APIs, free tiers, local runtimes) without rewriting business logic.
+Teams need to swap providers without rewriting business logic.
 
 ### Terminology
 
@@ -24,42 +24,48 @@ How FlossWare application and platform code obtains AI model inference and relat
 
 - Does not choose specific model vendors or ranking algorithms ([ADR-0013](ADR-0013-bandit-based-model-selection.md)).
 - Does not define agent tool protocols ([ADR-0004](ADR-0004-mcp-tool-contracts.md)).
+- Does not establish a preferred pricing tier or execution topology.
 
 ## Decision
 
 All AI capabilities SHALL be accessed through provider abstractions.
 
 - Call sites depend on contracts (interfaces / ports), not concrete SDKs.
-- Providers MAY include hosted APIs, free services, or local inference runtimes when explicitly enabled (see [ADR-0003](ADR-0003-no-local-inference-default.md)).
+- Providers MAY include hosted APIs, local inference runtimes, enterprise-managed endpoints, or other compatible execution mechanisms when policy permits.
+- Provider and model selection SHALL be policy- and capability-driven as defined by [ADR-0021](ADR-0021-provider-neutral-ai-selection.md).
 - Routing, fallback, and consensus policies sit above the provider layer ([ADR-0012](ADR-0012-multi-model-consensus-quality-gates.md), [ADR-0013](ADR-0013-bandit-based-model-selection.md)).
 
 ## Consequences
 
 ### Positive
-- No model vendor lock-in.
+
+- No model vendor or pricing-tier lock-in.
 - Capabilities are selected through contracts.
 - Local inference is an optional capability, not a requirement.
 - Tests can substitute fake or recorded providers.
+- Provider choice can evolve without changing business logic.
 
 ### Negative
+
 - Extra abstraction cost and adapter maintenance.
 - Feature parity across providers is imperfect; lowest-common-denominator APIs may hide advanced features unless optional capability interfaces exist.
+- Capability discovery and routing policy require explicit metadata and observability.
 
 ## Alternatives Considered
 
 ### Single-vendor SDK everywhere
-Rejected — couples product roadmap to one vendor and blocks free/local paths.
+Rejected — couples product roadmap to one vendor.
 
 ### Direct multi-SDK usage at call sites
 Rejected — scatters vendor logic and makes policy (routing, fallback) inconsistent.
 
 ### Provider abstraction (chosen)
-Accepted — centralizes integration and preserves deployment flexibility.
+Accepted — centralizes integration and preserves deployment and policy flexibility.
 
 ## Related ADRs
-- [ADR-0003](ADR-0003-no-local-inference-default.md) — No Local Inference by Default
+- [ADR-0003](ADR-0003-no-local-inference-default.md) — Policy-Driven AI Execution Topology
 - [ADR-0004](ADR-0004-mcp-tool-contracts.md) — MCP and Tool Contracts
-- [ADR-0008](ADR-0008-free-first-modular-platform.md) — Free-First Modular Platform
 - [ADR-0012](ADR-0012-multi-model-consensus-quality-gates.md) — Multi-Model Consensus for Quality Gates
 - [ADR-0013](ADR-0013-bandit-based-model-selection.md) — Bandit-Based Model Selection
 - [ADR-0015](ADR-0015-dynamic-ai-model-inventory.md) — Dynamic AI Model Inventory
+- [ADR-0021](ADR-0021-provider-neutral-ai-selection.md) — Provider-Neutral AI Selection

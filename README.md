@@ -7,13 +7,13 @@ This repository defines shared engineering standards, architecture decisions, an
 - Configuration is the source of truth.
 - Defaults are minimal; capabilities are explicitly enabled.
 - Components are modular and composable.
-- Prefer open standards and free-first implementations.
+- Provider- and pricing-neutral: no AI provider, model vendor, hosting topology, or pricing tier is an architectural default.
 - Avoid unnecessary coupling.
 - Favor automation, repeatability, and infrastructure-as-code.
 - Agent-neutral: capabilities and infrastructure, not a required agent runtime or UI.
 - Capability before protocol; security at capability boundaries.
 
-See [ADR-0009](adr/ADR-0009-core-architecture-principles.md) and [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md) for normative statements.
+See [ADR-0009](adr/ADR-0009-core-architecture-principles.md), [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md), and [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md) for normative statements.
 
 ## Architecture Decisions
 
@@ -28,7 +28,7 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0005](adr/ADR-0005-event-driven-internal-bus.md) | Event-Driven Internal Bus |
 | [ADR-0006](adr/ADR-0006-cross-cutting-decorators.md) | Cross-Cutting Decorators |
 | [ADR-0007](adr/ADR-0007-unified-client-service-contract.md) | Unified Client-Service Contract |
-| [ADR-0008](adr/ADR-0008-free-first-modular-platform.md) | Free-First Modular Platform |
+| [ADR-0008](adr/ADR-0008-free-first-modular-platform.md) | Historical Free-First Platform Policy (Superseded) |
 | [ADR-0009](adr/ADR-0009-core-architecture-principles.md) | Core Architecture Principles |
 | [ADR-0010](adr/ADR-0010-rest-service-boundaries.md) | REST Service Boundaries and Integration |
 | [ADR-0011](adr/ADR-0011-stored-procedure-database-access.md) | Stored Procedure Database Access Policy |
@@ -41,6 +41,7 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0018](adr/ADR-0018-mcp-capability-exposure.md) | MCP Capability Exposure |
 | [ADR-0019](adr/ADR-0019-agent-tool-security-and-authorization.md) | Agent Tool Security and Authorization |
 | [ADR-0020](adr/ADR-0020-capability-protocol-separation.md) | Capability and Protocol Separation |
+| [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md) | Provider-Neutral AI Selection |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 
@@ -51,6 +52,7 @@ New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 3. [ADR-0018](adr/ADR-0018-mcp-capability-exposure.md) — MCP exposure rules
 4. [ADR-0019](adr/ADR-0019-agent-tool-security-and-authorization.md) — tool security
 5. [ADR-0017](adr/ADR-0017-agent-neutral-architecture.md) — agent-neutral posture
+6. [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md) — provider and pricing neutrality
 
 ## Reference architecture
 

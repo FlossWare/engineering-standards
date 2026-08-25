@@ -54,7 +54,7 @@ New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 3. [ADR-0018](adr/ADR-0018-mcp-capability-exposure.md) — MCP exposure rules
 4. [ADR-0019](adr/ADR-0019-agent-tool-security-and-authorization.md) — tool security
 5. [ADR-0017](adr/ADR-0017-agent-neutral-architecture.md) — agent-neutral posture
-6. [ADR-0021](adr/ADR-0021-provider-and-pricing-neutral-selection.md) — provider and pricing neutrality
+6. [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md) — provider and pricing neutrality
 7. [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md) — reproducible artifact distribution
 
 ## Reference architecture

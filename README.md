@@ -14,7 +14,7 @@ This repository defines shared engineering standards, architecture decisions, an
 - Capability before protocol; security at capability boundaries.
 - Released artifacts are derived, reproducible delivery outputs, not sources of truth.
 
-See [ADR-0009](adr/ADR-0009-core-architecture-principles.md), [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md), [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md), and [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md) for normative statements.
+See [ADR-0009](adr/ADR-0009-core-architecture-principles.md), [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md), [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md), [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md), and [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) for normative statements.
 
 ## Architecture Decisions
 
@@ -44,6 +44,7 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0020](adr/ADR-0020-capability-protocol-separation.md) | Capability and Protocol Separation |
 | [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md) | Provider-Neutral AI Selection |
 | [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md) | Reproducible Build Artifacts and Distribution |
+| [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) | Canonical FlossWare AI Persistent State Root |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 
@@ -56,6 +57,7 @@ New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 5. [ADR-0017](adr/ADR-0017-agent-neutral-architecture.md) — agent-neutral posture
 6. [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md) — provider and pricing neutrality
 7. [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md) — reproducible artifact distribution
+8. [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) — persistent AI state ownership
 
 ## Reference architecture
 
@@ -78,5 +80,5 @@ All ADRs should include:
 RFC 2119 keywords are used consistently:
 
 - SHALL / SHALL NOT: mandatory requirements (MUST is treated as equivalent to SHALL)
-- SHOULD / SHOULD NOT: recommended practices
+- SHOULD / SHOULD NOT: strong recommendation
 - MAY: optional behavior

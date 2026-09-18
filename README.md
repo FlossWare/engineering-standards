@@ -31,6 +31,9 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0011](adr/ADR-0011-stored-procedure-database-access.md) | Stored Procedure Database Access Policy |
 | [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md) | Configuration as Source of Truth |
 | [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md) | Reproducible Build Artifacts and Distribution |
+| [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) | Canonical FlossWare AI Persistent State Root |
+| [ADR-0024](adr/ADR-0024-contract-centric-repository-layering-and-naming.md) | Contract-Centric Repository Layering and Naming |
+| [ADR-0025](adr/ADR-0025-ai-architecture-ownership.md) | AI Architecture Ownership |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 

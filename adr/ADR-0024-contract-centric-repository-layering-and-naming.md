@@ -161,7 +161,6 @@ Rejected. The purpose of this decision is to establish one reusable FlossWare co
 
 - [ADR-0009](ADR-0009-core-architecture-principles.md) — Core Architecture Principles
 - [ADR-0010](ADR-0010-rest-service-boundaries.md) — REST Service Boundaries and Integration
-- [ADR-0020](ADR-0020-capability-protocol-separation.md) — Capability and Protocol Separation
 
 ## Notes
 

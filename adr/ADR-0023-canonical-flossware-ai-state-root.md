@@ -95,7 +95,5 @@ Chosen because it gives FlossWare AI one durable ownership boundary while preser
 ## Related ADRs
 
 - [ADR-0016](ADR-0016-configuration-as-source-of-truth.md) — Configuration as Source of Truth
-- [ADR-0021](ADR-0021-provider-neutral-ai-selection.md) — Provider-Neutral AI Selection
 - [ADR-0022](ADR-0022-reproducible-build-artifacts-and-distribution.md) — Reproducible Build Artifacts and Distribution
-- [ADR-0020](ADR-0020-capability-protocol-separation.md) — Capability and Protocol Separation
 - `FlossWare/agent-setup#84` — Canonical persistent AI state root implementation

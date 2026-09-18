@@ -94,14 +94,6 @@ Example:
 
 Do **not** use a single ambiguous `version` field for both envelope and domain semantics. Event schemas are maintained independently from implementations and are treated as public contracts between services.
 
-## Agent Tool Contract Model
-
-When MCP is used, the MCP server and tool definitions are capability adapters, not implicit activation mechanisms.
-
-- MCP exposure requires explicit configuration ([ADR-0018](ADR-0018-mcp-capability-exposure.md)).
-- Tool authorization is separate from tool discovery ([ADR-0019](ADR-0019-agent-tool-security-and-authorization.md)).
-- MCP adapters SHALL delegate to reusable capabilities rather than duplicate business logic ([ADR-0020](ADR-0020-capability-protocol-separation.md)).
-
 ## Consequences
 
 ### Positive
@@ -163,13 +155,9 @@ Auto-configuration (e.g. classpath scanning that enables features by default) SH
 
 ## Related ADRs
 
-- [ADR-0004](ADR-0004-mcp-tool-contracts.md) — MCP and Tool Contracts
 - [ADR-0005](ADR-0005-event-driven-internal-bus.md) — Event-Driven Internal Bus
 - [ADR-0006](ADR-0006-cross-cutting-decorators.md) — Cross-Cutting Decorators
 - [ADR-0016](ADR-0016-configuration-as-source-of-truth.md) — Configuration as Source of Truth
-- [ADR-0018](ADR-0018-mcp-capability-exposure.md) — MCP Capability Exposure
-- [ADR-0019](ADR-0019-agent-tool-security-and-authorization.md) — Agent Tool Security and Authorization
-- [ADR-0020](ADR-0020-capability-protocol-separation.md) — Capability and Protocol Separation
 
 ## Result
 

@@ -70,10 +70,6 @@ Complex behavior belongs in versioned application code or services, parameterize
 - Components SHALL NOT create hidden or undocumented configuration channels (undocumented env vars, magic files outside the project config model, or silent fallbacks that override declared config without logging).
 - Optional overrides (env, flags) SHOULD be documented and layered in a defined precedence order.
 
-### Relationship to dynamic registries
-
-Dynamic model registries ([ADR-0015](ADR-0015-dynamic-service-discovery-ai-models.md)) MAY supply *inventory* data, but policy (which pools are allowed, free-first filters, budget limits, agent eligibility) SHALL remain under explicit configuration owned by the deploying system.
-
 ## Consequences
 
 ### Positive
@@ -107,10 +103,4 @@ Matches FlossWare principles and supports explainable runtime behavior without c
 ## Related ADRs
 
 - [ADR-0001](ADR-0001-explicit-opt-in-cross-cutting-behavior.md) — Explicit Opt-In
-- [ADR-0004](ADR-0004-mcp-tool-contracts.md) — MCP and Tool Contracts
 - [ADR-0009](ADR-0009-core-architecture-principles.md) — Core Architecture Principles
-- [ADR-0015](ADR-0015-dynamic-service-discovery-ai-models.md) — Dynamic Service Discovery for AI Models
-- [ADR-0017](ADR-0017-agent-neutral-architecture.md) — Agent-Neutral Architecture
-- [ADR-0018](ADR-0018-mcp-capability-exposure.md) — MCP Capability Exposure
-- [ADR-0019](ADR-0019-agent-tool-security-and-authorization.md) — Agent Tool Security and Authorization
-- [ADR-0020](ADR-0020-capability-protocol-separation.md) — Capability and Protocol Separation

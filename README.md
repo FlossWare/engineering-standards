@@ -7,6 +7,8 @@ This repository defines shared engineering standards, architecture decisions, an
 - Configuration is the source of truth.
 - Defaults are minimal; capabilities are explicitly enabled.
 - Components are modular and composable.
+- Contracts define stable semantics; implementations realize those contracts without becoming the architectural authority.
+- Repository names SHALL communicate contract, domain, and implementation-language roles where a contract family is split across repositories.
 - Provider- and pricing-neutral: no AI provider, model vendor, hosting topology, or pricing tier is an architectural default.
 - Avoid unnecessary coupling.
 - Favor automation, repeatability, and infrastructure-as-code.
@@ -14,7 +16,7 @@ This repository defines shared engineering standards, architecture decisions, an
 - Capability before protocol; security at capability boundaries.
 - Released artifacts are derived, reproducible delivery outputs, not sources of truth.
 
-See [ADR-0009](adr/ADR-0009-core-architecture-principles.md), [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md), [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md), [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md), and [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) for normative statements.
+See [ADR-0009](adr/ADR-0009-core-architecture-principles.md), [ADR-0016](adr/ADR-0016-configuration-as-source-of-truth.md), [ADR-0020](adr/ADR-0020-capability-protocol-separation.md), [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md), [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md), [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md), and [ADR-0024](adr/ADR-0024-contract-centric-repository-layering-and-naming.md) for normative statements.
 
 ## Architecture Decisions
 
@@ -45,6 +47,7 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md) | Provider-Neutral AI Selection |
 | [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md) | Reproducible Build Artifacts and Distribution |
 | [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) | Canonical FlossWare AI Persistent State Root |
+| [ADR-0024](adr/ADR-0024-contract-centric-repository-layering-and-naming.md) | Contract-Centric Repository Layering and Naming |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 
@@ -58,6 +61,7 @@ New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 6. [ADR-0021](adr/ADR-0021-provider-neutral-ai-selection.md) — provider and pricing neutrality
 7. [ADR-0022](adr/ADR-0022-reproducible-build-artifacts-and-distribution.md) — reproducible artifact distribution
 8. [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) — persistent AI state ownership
+9. [ADR-0024](adr/ADR-0024-contract-centric-repository-layering-and-naming.md) — contract-centric repository layering and naming
 
 ## Reference architecture
 

@@ -13,7 +13,7 @@ FlossWare components are increasingly consumed by applications, coding agents, s
 
 FlossWare also needs a clear boundary between authoritative source and distributable artifacts. Configuration and source remain the basis for understanding and reproducing behavior; a wheel, source distribution, container image, or other release artifact is a derived delivery mechanism, not a second source of truth.
 
-The ecosystem therefore needs a common build and distribution policy that supports convenient artifact-first installation without creating a hidden dependency on a particular package registry, operating system, build environment, provider, or pricing tier.
+The ecosystem therefore needs a common build and distribution policy that supports convenient artifact-first installation without creating a hidden dependency on a particular package registry, operating system, build environment or pricing tier.
 
 ## Scope
 
@@ -123,4 +123,3 @@ Provides convenient consumer installation while preserving development flexibili
 
 - [ADR-0001](ADR-0001-explicit-opt-in-cross-cutting-behavior.md) — Explicit Opt-In Cross-Cutting Behavior
 - [ADR-0016](ADR-0016-configuration-as-source-of-truth.md) — Configuration as Source of Truth
-- [ADR-0021](ADR-0021-provider-neutral-ai-selection.md) — Provider-Neutral AI Selection

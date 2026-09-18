@@ -1,7 +1,7 @@
 # ADR-0024: Contract-Centric Repository Layering and Naming
 
 ## Status
-Accepted
+Proposed
 
 ## Date
 2026-09-17
@@ -74,6 +74,8 @@ Additional language implementations SHALL be peers:
 
 The domain repository SHALL remain implementation-language neutral unless an exception is explicitly documented.
 
+A domain repository MAY extend the foundational contract with domain-specific semantics, but SHALL NOT redefine, contradict, or replace foundational contract semantics. The foundational `{contract}` repository remains authoritative for those semantics.
+
 ### Domain implementation repository
 
 `{contract}-{domain}-{language}` SHALL contain the implementation of the domain contracts for the specified language.
@@ -110,6 +112,8 @@ loom-ai-erlang
 Python is therefore not special. It is one implementation language among peers.
 
 ### Naming
+
+A two-segment name of the form `{contract}-{language}` is reserved for a language implementation. Domain names SHOULD avoid colliding with language identifiers. If a domain identifier would create an ambiguous repository name, the repository SHALL use an explicit domain-qualified naming form rather than relying on positional guesswork.
 
 Repository names SHALL continue to follow the FlossWare lowercase kebab-case convention.
 

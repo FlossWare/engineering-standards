@@ -17,7 +17,7 @@ See the core ADRs below for normative statements. AI-domain architecture decisio
 
 ## Architecture Decisions
 
-Architecture decisions are documented as ADRs under [`adr/`](adr/).
+Architecture decisions are documented as ADRs under adr/.
 
 | ADR | Topic |
 | --- | --- |
@@ -34,8 +34,9 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) | Canonical FlossWare AI Persistent State Root |
 | [ADR-0024](adr/ADR-0024-contract-centric-repository-layering-and-naming.md) | Contract-Centric Repository Layering and Naming |
 | [ADR-0025](adr/ADR-0025-ai-architecture-ownership.md) | AI Architecture Ownership |
+| [ADR-0026](adr/ADR-0026-versioning-tagging-and-releases.md) | Versioning, Tagging, and Releases |
 
-New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
+New ADRs SHOULD use adr/TEMPLATE.md.
 
 ### AI-domain ADRs
 

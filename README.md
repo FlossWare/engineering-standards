@@ -41,6 +41,10 @@ New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 
 AI architecture decisions are owned by FlossWare/loom-ai. This repository retains generic engineering principles and FlossWare-wide infrastructure decisions.
 
+## CI standards
+
+- [SonarCloud quality gate](docs/ci/sonarcloud.md) - shared GitHub Actions integration for FlossWare repositories.
+
 ## Reference architecture
 
 - [Reference architecture diagram](docs/architecture/reference-architecture.md) (Mermaid)

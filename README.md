@@ -34,6 +34,8 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0023](adr/ADR-0023-canonical-flossware-ai-state-root.md) | Canonical FlossWare AI Persistent State Root |
 | [ADR-0024](adr/ADR-0024-contract-centric-repository-layering-and-naming.md) | Contract-Centric Repository Layering and Naming |
 | [ADR-0025](adr/ADR-0025-ai-architecture-ownership.md) | AI Architecture Ownership |
+| [ADR-0026](adr/ADR-0026-two-component-release-versioning.md) | Two-Component Release Versioning |
+| [ADR-0027](adr/ADR-0027-versioning-tagging-and-releases.md) | Versioning, Tagging, and Releases |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 

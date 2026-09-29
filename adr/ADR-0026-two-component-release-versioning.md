@@ -1,9 +1,11 @@
-# ADR-0023: Two-Component Release Versioning
+# ADR-0026: Two-Component Release Versioning
 
 ## Status
+
 Accepted
 
 ## Date
+
 2026-08-31
 
 ## Context

@@ -1,0 +1,53 @@
+name: SonarCloud Quality Gate
+
+on:
+  workflow_call:
+    inputs:
+      project_key:
+        description: SonarCloud project key
+        required: true
+        type: string
+      organization:
+        description: SonarCloud organization
+        required: false
+        default: flossware
+        type: string
+      working_directory:
+        description: Directory containing the repository source to analyze
+        required: false
+        default: .
+        type: string
+      extra_args:
+        description: Additional Sonar scanner arguments
+        required: false
+        default: ""
+        type: string
+    secrets:
+      SONAR_TOKEN:
+        description: SonarCloud authentication token
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarCloud scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: ${{ inputs.working_directory }}
+          args: >-
+            -Dsonar.projectKey=${{ inputs.project_key }}
+            -Dsonar.organization=${{ inputs.organization }}
+            -Dsonar.qualitygate.wait=true
+            ${{ inputs.extra_args }}

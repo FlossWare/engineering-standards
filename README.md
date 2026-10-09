@@ -42,6 +42,8 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0030](adr/ADR-0030-provider-credential-and-model-policy-isolation.md) | Provider Credential and Model Policy Isolation |
 | [ADR-0031](adr/ADR-0031-rest-representation-contracts-and-api-evolution.md) | REST Representation Contracts and API Evolution |
 
+ADR-0031 is currently **Proposed**. Adoption is being validated in sequence: Claude Ensemble first ([implementation PR #335](https://github.com/FlossWare/claude-ensemble/pull/335), [tracking issue #334](https://github.com/FlossWare/claude-ensemble/issues/334)), Loom HTTP bindings second ([loom#25](https://github.com/FlossWare/loom/issues/25)), then other REST-exposed APIs through the [ecosystem inventory issue #50](https://github.com/FlossWare/engineering-standards/issues/50). The initial CE slice is opt-in and compatibility-preserving; it does not establish ecosystem-wide conformance.
+
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 
 ### AI-domain ADRs

@@ -40,6 +40,7 @@ Architecture decisions are documented as ADRs under [`adr/`](adr/).
 | [ADR-0028](adr/ADR-0028-standalone-ai-components.md) | Standalone AI Components |
 | [ADR-0029](adr/ADR-0029-agent-runtime-identity-and-profile-separation.md) | Agent Runtime Identity and Profile Separation |
 | [ADR-0030](adr/ADR-0030-provider-credential-and-model-policy-isolation.md) | Provider Credential and Model Policy Isolation |
+| [ADR-0031](adr/ADR-0031-rest-representation-contracts-and-api-evolution.md) | REST Representation Contracts and API Evolution |
 
 New ADRs SHOULD use [`adr/TEMPLATE.md`](adr/TEMPLATE.md).
 
